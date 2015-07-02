@@ -1,36 +1,5 @@
---------------------------------------------------------------------------------
--- Company: 
--- Engineer:
---
--- Create Date:   16:39:06 06/27/2015
--- Design Name:   
--- Module Name:   F:/Projects/MyStuff/TIS100/register_file_tb.vhd
--- Project Name:  TIS100
--- Target Device:  
--- Tool versions:  
--- Description:   
--- 
--- VHDL Test Bench Created by ISE for module: register_file
--- 
--- Dependencies:
--- 
--- Revision:
--- Revision 0.01 - File Created
--- Additional Comments:
---
--- Notes: 
--- This testbench has been automatically generated using types std_logic and
--- std_logic_vector for the ports of the unit under test.  Xilinx recommends
--- that these types always be used for the top-level I/O of a design in order
--- to guarantee that the testbench will bind correctly to the post-implementation 
--- simulation model.
---------------------------------------------------------------------------------
 LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
- 
--- Uncomment the following library declaration if using
--- arithmetic functions with Signed or Unsigned values
---USE ieee.numeric_std.ALL;
  
 ENTITY register_file_tb IS
 END register_file_tb;
@@ -106,7 +75,7 @@ BEGIN
     I_ra1 <= "00";
     wait for I_clk_period;
     assert O_rd1 = X"0000" report "Error, NIL register != 0" severity ERROR;
-    assert O_rd1 /= X"0000" report "Reading NIL register produced 0 even after it was written" severity NOTE;
+--    assert O_rd1 /= X"0000" report "Reading NIL register produced 0 even after it was written" severity NOTE;
 
     -- Write the ACC register and verify it was written correctly.
     I_we3 <= '1';
@@ -116,7 +85,7 @@ BEGIN
     I_ra1 <= "01";
     wait for I_clk_period;
     assert O_rd1 = X"0acc" report "Error, ACC register not written correctly" severity ERROR;
-    assert O_rd1 /= X"0acc" report "ACC written and read correctly" severity NOTE;
+--    assert O_rd1 /= X"0acc" report "ACC written and read correctly" severity NOTE;
 
     -- Write the BAK register and read both ACC and back at the same time.
     I_we3 <= '1';
@@ -128,8 +97,8 @@ BEGIN
     wait for I_clk_period;
     assert O_rd1 = X"bacc" report "Error, BAK register not written correctly" severity ERROR;
     assert O_rd2 = X"0acc" report "Error, ACC register not read correctly. Should have the last value." severity ERROR;
-    assert O_rd1 /= X"bacc" report "BAK written and read correctly" severity NOTE;
-    assert O_rd2 /= X"0acc" report "ACC read correctly for the second time." severity NOTE;
+--    assert O_rd1 /= X"bacc" report "BAK written and read correctly" severity NOTE;
+--    assert O_rd2 /= X"0acc" report "ACC read correctly for the second time." severity NOTE;
 
     -- Write the TMP register and verify it was written correctly.
     I_we3 <= '1';
@@ -139,7 +108,7 @@ BEGIN
     I_ra1 <= "11";
     wait for I_clk_period;
     assert O_rd1 = X"1234" report "Error, TMP register not written correctly" severity ERROR;
-    assert O_rd1 /= X"1234" report "TMP written and read correctly" severity NOTE;
+--    assert O_rd1 /= X"1234" report "TMP written and read correctly" severity NOTE;
 
     wait;
   end process;
