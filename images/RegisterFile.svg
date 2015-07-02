@@ -1,0 +1,123 @@
+
+<svg xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="176"
+     height="213">
+    <defs/>
+    <g transform=" translate(-332,-175.25)">
+        <rect x="360" y="230" width="120" height="130" fill="#efd3d2"
+              stroke="#000000" pointer-events="none"/>
+        <rect x="339" y="349" width="2" height="2" fill="#000000" stroke="none"
+              pointer-events="none"/>
+        <path d="M 341 350 L 359 350" fill="#000000" stroke="#000000"
+              stroke-width="2" stroke-linecap="square" stroke-miterlimit="10"
+              pointer-events="none"/>
+        <g fill="#000000" font-family="Arial,Helvetica" font-weight="bold"
+           font-size="12px">
+            <text x="362" y="353.75">
+                dD
+            </text>
+        </g>
+        <rect x="336" y="346" width="8" height="8" fill="none" stroke="none"
+              pointer-events="none"/>
+        <rect x="419" y="379" width="2" height="2" fill="#000000" stroke="none"
+              pointer-events="none"/>
+        <path d="M 420 361 L 420 379" fill="#000000" stroke="#000000"
+              stroke-width="2" stroke-linecap="square" stroke-miterlimit="10"
+              pointer-events="none"/>
+        <g fill="#000000" font-family="Arial,Helvetica" font-weight="bold"
+           text-anchor="middle" font-size="12px">
+            <text x="419.75" y="354.5">
+                writeEnable
+            </text>
+        </g>
+        <rect x="416" y="376" width="8" height="8" fill="none" stroke="none"
+              pointer-events="none"/>
+        <rect x="339" y="259" width="2" height="2" fill="#000000" stroke="none"
+              pointer-events="none"/>
+        <path d="M 341 260 L 359 260" fill="#000000" stroke="#000000"
+              stroke-width="2" stroke-linecap="square" stroke-miterlimit="10"
+              pointer-events="none"/>
+        <g fill="#000000" font-family="Arial,Helvetica" font-weight="bold"
+           font-size="12px">
+            <text x="362" y="263.75">
+                rA
+            </text>
+        </g>
+        <rect x="336" y="256" width="8" height="8" fill="none" stroke="none"
+              pointer-events="none"/>
+        <rect x="339" y="279" width="2" height="2" fill="#000000" stroke="none"
+              pointer-events="none"/>
+        <path d="M 341 280 L 359 280" fill="#000000" stroke="#000000"
+              stroke-width="2" stroke-linecap="square" stroke-miterlimit="10"
+              pointer-events="none"/>
+        <g fill="#000000" font-family="Arial,Helvetica" font-weight="bold"
+           font-size="12px">
+            <text x="362" y="283.75">
+                rB
+            </text>
+        </g>
+        <rect x="336" y="276" width="8" height="8" fill="none" stroke="none"
+              pointer-events="none"/>
+        <rect x="339" y="329" width="2" height="2" fill="#000000" stroke="none"
+              pointer-events="none"/>
+        <path d="M 341 330 L 359 330" fill="#000000" stroke="#000000"
+              stroke-width="2" stroke-linecap="square" stroke-miterlimit="10"
+              pointer-events="none"/>
+        <g fill="#000000" font-family="Arial,Helvetica" font-weight="bold"
+           font-size="12px">
+            <text x="362" y="333.75">
+                rD
+            </text>
+        </g>
+        <rect x="336" y="326" width="8" height="8" fill="none" stroke="none"
+              pointer-events="none"/>
+        <rect x="379" y="209" width="2" height="2" fill="#000000" stroke="none"
+              pointer-events="none"/>
+        <path d="M 380 211 L 380 229" fill="#000000" stroke="#000000"
+              stroke-width="2" stroke-linecap="square" stroke-miterlimit="10"
+              pointer-events="none"/>
+        <g fill="#000000" font-family="Arial,Helvetica" font-weight="bold"
+           text-anchor="middle" font-size="12px">
+            <text x="379.75" y="243">
+                clk
+            </text>
+        </g>
+        <rect x="376" y="206" width="8" height="8" fill="none" stroke="none"
+              pointer-events="none"/>
+        <rect x="390" y="180" width="61" height="13" fill-opacity="0"
+              fill="#dae2f2" stroke="#000000" stroke-opacity="0"
+              pointer-events="none"/>
+        <g fill="#000000" font-family="Arial,Helvetica" font-weight="bold"
+           text-anchor="middle" font-size="12px">
+            <text x="420.25" y="190.25">
+                Register File
+            </text>
+        </g>
+        <rect x="499" y="309" width="2" height="2" fill="#000000" stroke="none"
+              pointer-events="none"/>
+        <path d="M 481 310 L 499 310" fill="#000000" stroke="#000000"
+              stroke-width="2" stroke-linecap="square" stroke-miterlimit="10"
+              pointer-events="none"/>
+        <g fill="#000000" font-family="Arial,Helvetica" font-weight="bold"
+           text-anchor="end" font-size="12px">
+            <text x="477.5" y="313.75">
+                dB
+            </text>
+        </g>
+        <rect x="496" y="306" width="8" height="8" fill="none" stroke="none"
+              pointer-events="none"/>
+        <rect x="499" y="279" width="2" height="2" fill="#000000" stroke="none"
+              pointer-events="none"/>
+        <path d="M 481 280 L 499 280" fill="#000000" stroke="#000000"
+              stroke-width="2" stroke-linecap="square" stroke-miterlimit="10"
+              pointer-events="none"/>
+        <g fill="#000000" font-family="Arial,Helvetica" font-weight="bold"
+           text-anchor="end" font-size="12px">
+            <text x="477.5" y="283.75">
+                dA
+            </text>
+        </g>
+        <rect x="496" y="276" width="8" height="8" fill="none" stroke="none"
+              pointer-events="none"/>
+    </g>
+</svg>
