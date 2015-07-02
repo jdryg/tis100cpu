@@ -1,30 +1,11 @@
-----------------------------------------------------------------------------------
--- Company: 
--- Engineer: 
--- 
--- Create Date:    20:02:15 06/26/2015 
--- Design Name: 
--- Module Name:    register_file - Behavioral 
--- Project Name: 
--- Target Devices: 
--- Tool versions: 
--- Description: 
---
--- Dependencies: 
---
--- Revision: 
--- Revision 0.01 - File Created
--- Additional Comments: 
---
-----------------------------------------------------------------------------------
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
 
 -- TODO: Rename inputs to more meaningful names. 
 entity register_file is
-  Generic (WIDTH : integer := 8);
-  Port ( I_clk : in  STD_LOGIC;
+  generic (WIDTH : integer := 8);
+  port ( I_clk : in  STD_LOGIC;
          I_we3 : in  STD_LOGIC;
          I_ra1 : in  STD_LOGIC_VECTOR (1 downto 0);
          I_ra2 : in  STD_LOGIC_VECTOR (1 downto 0);
