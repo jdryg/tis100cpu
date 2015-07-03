@@ -29,7 +29,7 @@ begin
       case state is
         when S_EMPTY => 
           -- Port is EMPTY. The worst case scenario at this point is one node to write
-          -- and the other to read, at the same time. Favor reads over writes. 
+          -- and the other to read, at the same time. Favor writes over reads (1 cycle less to complete the transaction). 
           if (I_writeEnable = '1') then
             data <= I_dataIn;
             state <= S_WAITING_READ;
