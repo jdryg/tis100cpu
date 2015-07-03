@@ -40,7 +40,7 @@
         <g fill="#000000" font-family="Arial,Helvetica" font-weight="bold"
            text-anchor="end" font-size="17px">
             <text x="598.7" y="397.35">
-                AluOp
+                aluOp
             </text>
         </g>
         <rect x="624.4" y="386.4" width="11.2" height="11.2" fill="none"
@@ -66,7 +66,7 @@
         <g fill="#000000" font-family="Arial,Helvetica" font-weight="bold"
            text-anchor="end" font-size="17px">
             <text x="598.7" y="341.35">
-                rB
+                srcB
             </text>
         </g>
         <rect x="624.4" y="330.4" width="11.2" height="11.2" fill="none"
@@ -79,7 +79,7 @@
         <g fill="#000000" font-family="Arial,Helvetica" font-weight="bold"
            text-anchor="end" font-size="17px">
             <text x="598.7" y="313.35">
-                rA
+                srcA
             </text>
         </g>
         <rect x="624.4" y="302.4" width="11.2" height="11.2" fill="none"
@@ -92,7 +92,7 @@
         <g fill="#000000" font-family="Arial,Helvetica" font-weight="bold"
            text-anchor="end" font-size="17px">
             <text x="598.7" y="285.35">
-                rD
+                dst
             </text>
         </g>
         <rect x="624.4" y="274.4" width="11.2" height="11.2" fill="none"
@@ -114,7 +114,7 @@
         <g fill="#000000" font-family="Arial,Helvetica" font-weight="bold"
            text-anchor="end" font-size="17px">
             <text x="598.7" y="481.35">
-                RegWrite
+                regWrite
             </text>
         </g>
         <rect x="624.4" y="470.4" width="11.2" height="11.2" fill="none"
@@ -127,7 +127,7 @@
         <g fill="#000000" font-family="Arial,Helvetica" font-weight="bold"
            text-anchor="end" font-size="17px">
             <text x="598.7" y="509.35">
-                ContainsIMM
+                containsIMM
             </text>
         </g>
         <rect x="624.4" y="498.4" width="11.2" height="11.2" fill="none"
