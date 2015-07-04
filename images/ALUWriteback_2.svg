@@ -229,6 +229,12 @@
         <rect x="936" y="738" width="10.8" height="23.4" fill-opacity="0"
               fill="#dae2f2" stroke="#000000" stroke-opacity="0"
               pointer-events="none"/>
+        <g fill="#000000" font-family="Arial,Helvetica" font-weight="bold"
+           text-anchor="middle" font-size="22px">
+            <text x="941.15" y="756.65">
+                0
+            </text>
+        </g>
         <path d="M 810 612 L 954 612 L 954 666 L 972 666 L 972 666" fill="none"
               stroke="#000000" stroke-width="3.6" stroke-miterlimit="10"
               pointer-events="none"/>
