@@ -18,7 +18,7 @@ begin
       when "00" => O_y <= I_a + I_b;
       when "01" => O_y <= I_a - I_b;
       when "10" => O_y <= NOT I_a + I_b;
-      when "11" => O_y <= (0 => I_a(WIDTH-1), others => '0'); -- SLT: implied comparizon with 0
+      when "11" => O_y <= (0 => I_a(WIDTH-1), others => '0'); -- SLT: implied comparison with 0
       when others => O_y <= (others => 'X');
     end case;
   end process;
