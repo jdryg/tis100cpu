@@ -1,0 +1,11 @@
+# Calculate res = 5 * 3
+MOV 5, ACC   # iteration_counter = 5;
+SAV          # BAK = iteration_counter;
+MOV 0, ACC   # res = 0;
+LOOP: ADD 3  # res += 3;
+SWP          # ACC = iteration_counter; BAK = res;
+SUB 1        # iteration_counter -= 1;
+JEZ END      # if (iteration_counter == 0) goto END;
+SWP          # ACC = res; BAK = iteration_counter;
+JMP LOOP     # goto LOOP;
+END: SWP     # ACC = res (= 5 * 3)
