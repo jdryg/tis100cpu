@@ -101,7 +101,7 @@ bool Program::FixForwardJumps()
 	return true;
 }
 
-unsigned int* Program::GetInstructionData() const
+unsigned int* Program::GetCode() const
 {
 	unsigned int numInstructions = m_InstructionList.size();
 	unsigned int* imem = new unsigned int[numInstructions];

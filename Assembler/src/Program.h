@@ -19,7 +19,7 @@ public:
 
 	bool FixForwardJumps();
 
-	unsigned int* GetInstructionData() const;
+	unsigned int* GetCode() const;
 	unsigned int GetNumInstructions() const;
 
 private:

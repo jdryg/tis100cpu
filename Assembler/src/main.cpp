@@ -495,7 +495,7 @@ Program* Assemble(std::vector<TIS100Instruction*>& instructionList)
 
 bool WriteProg(const char* filename, Program* prog)
 {
-	unsigned int* instrData = prog->GetInstructionData();
+	unsigned int* imem = prog->GetCode();
 
 	FILE* f = fopen(filename, "w");
 	if (!f)
@@ -506,7 +506,7 @@ bool WriteProg(const char* filename, Program* prog)
 	unsigned int numInstructions = prog->GetNumInstructions();
 	for (unsigned int i = 0; i < numInstructions; ++i)
 	{
-		fprintf(f, "%08X\n", instrData[i]);
+		fprintf(f, "%08X\n", imem[i]);
 	}
 
 	fclose(f);
