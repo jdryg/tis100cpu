@@ -1,6 +1,7 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
-use IEEE.NUMERIC_STD.ALL;
+use IEEE.STD_LOGIC_ARITH.ALL;
+use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 entity next_pc is
   Port ( I_srcA_isPort : in  STD_LOGIC;
@@ -30,7 +31,6 @@ begin
   dstPortProc: process (I_dst_isPort, I_pw_isDataOutValid) begin
     isWritePortReady <= (NOT I_dst_isPort) OR (I_dst_isPort AND I_pw_isDataOutValid);
   end process;
-  
   
   jmpDeltaProc: process (I_regB_data, I_imm, I_containsIMM) begin
     if(I_containsIMM = '1') then
