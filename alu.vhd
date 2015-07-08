@@ -13,15 +13,34 @@ end alu;
 
 architecture Behavioral of alu is
 begin
-  process(I_a, I_b, I_op) begin
-    case I_op is
-      when "00" => O_y <= I_a + I_b;
-      when "01" => O_y <= I_a - I_b;
-      when "10" => O_y <= NOT I_a + I_b;
-      when "11" => O_y <= (0 => I_a(WIDTH-1), others => '0'); -- SLT: implied comparison with 0
-      when others => O_y <= (others => 'X');
-    end case;
+  process(I_a, I_b, I_op) 
+    variable aluResult : STD_LOGIC_VECTOR (WIDTH-1 downto 0);
+  begin
+    O_isZero <= '0';
+    if(I_op = "00") then
+      aluResult := I_a + I_b;
+      if (aluResult = X"0") then
+        O_isZero <= '1';
+      end if;
+    elsif (I_op = "01") then
+      aluResult := I_a - I_b;
+      if (aluResult = X"0") then
+        O_isZero <= '1';
+      end if;
+    elsif (I_op = "10") then
+      aluResult := NOT I_a + I_b;
+      if (aluResult = X"0") then
+        O_isZero <= '1';
+      end if;
+    elsif (I_op = "11") then
+      aluResult := (0 => I_a(WIDTH-1), others => '0'); -- SLT: implied comparison with 0
+      if (I_a = X"0") then
+        O_isZero <= '1';
+      end if;
+    else 
+      aluResult := (others => 'X');
+    end if;
+    
+    O_y <= aluResult;
   end process;
-  
-  O_isZero <= '1' when O_y = (others => '0') else '0';
 end Behavioral;
