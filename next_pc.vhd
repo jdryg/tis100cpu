@@ -15,13 +15,13 @@ entity next_pc is
          I_jmpCondition : in  STD_LOGIC_VECTOR (2 downto 0);
          I_isZero : in  STD_LOGIC;
          I_isLessThan : in  STD_LOGIC;
-         I_PC : in  STD_LOGIC_VECTOR (15 downto 0);
-         O_NewPC : out  STD_LOGIC_VECTOR (15 downto 0));
+         I_PC : in  STD_LOGIC_VECTOR (5 downto 0);
+         O_NewPC : out  STD_LOGIC_VECTOR (5 downto 0));
 end next_pc;
 
 architecture Behavioral of next_pc is
   signal isReadPortReady, isWritePortReady: STD_LOGIC;
-  signal jmpDelta: STD_LOGIC_VECTOR (15 downto 0);
+  signal jmpDelta: STD_LOGIC_VECTOR (5 downto 0);
   signal takeJump: STD_LOGIC;
 begin
   srcPortProc: process (I_srcA_isPort, I_pr_isDataOutValid) begin
