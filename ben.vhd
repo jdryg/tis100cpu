@@ -1,5 +1,6 @@
 -- TIS-100 16-bit Basic Execution Node (BEN)
--- 
+-- Added these lines on rev. 42 in order to remove the commit message saying that 
+-- there is a bug in the implementation, since the bug has been fixed in the same rev.
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 

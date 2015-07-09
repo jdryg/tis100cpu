@@ -29,8 +29,8 @@ begin
     end if;
   end process;
 
-  -- Read 2 regs asynchronously
-	process(I_ra1, I_ra2) begin
+  -- Read 2 regs 
+	process(I_clk, I_ra1, I_ra2) begin
     -- Check for the special NIL register in order to make sure we always read 0, 
     -- independent of the value actually written to this register.
     if(I_ra1 = "00") then 

@@ -34,9 +34,9 @@ begin
   
   jmpDeltaProc: process (I_regB_data, I_imm, I_containsIMM) begin
     if(I_containsIMM = '1') then
-      jmpDelta <= I_imm;
+      jmpDelta <= I_imm(5 downto 0);
     else 
-      jmpDelta <= I_regB_data;
+      jmpDelta <= I_regB_data(5 downto 0);
     end if;
   end process;
   
@@ -61,7 +61,7 @@ begin
         O_NewPC <= I_PC + 1;
       else
         -- Finally, this is a jump instruction and the condition is true. Jump!
-        O_NewPC <= I_PC + jmpDelta; -- TODO: I hope this is a signed add.
+        O_NewPC <= I_PC + jmpDelta; -- This is a signed add.
       end if;
     end if;
   end process;

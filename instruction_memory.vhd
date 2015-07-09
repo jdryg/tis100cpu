@@ -29,7 +29,7 @@ architecture Behavioral of instruction_memory is
     -- SUB 1        # iteration_counter -= 1;
     X"84900001", -- SUB ACC, ACC, 1
     -- JEZ END      # if (iteration_counter == 0) goto END;
-    X"CC100006", -- JMP EQUAL, 5
+    X"CC100005", -- JMP EQUAL, 5
     -- SWP          # ACC = res; BAK = iteration_counter;
     X"01900000", -- ADD TMP, ACC, NIL
     X"00A00000", -- ADD ACC, BAK, NIL

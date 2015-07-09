@@ -26,7 +26,7 @@ void Program::AddMicroInstruction(MicroInstruction* mi)
 void Program::AddLabel(const char* label)
 {
 	// NOTE: Add 1 because the label points to the next instruction.
-	m_LabelMap.insert(_LabelMap::value_type(label, m_InstructionList.size() + 1));
+	m_LabelMap.insert(_LabelMap::value_type(label, m_InstructionList.size()));
 }
 
 int Program::FindLabelOffset(const char* label)
@@ -35,7 +35,7 @@ int Program::FindLabelOffset(const char* label)
 
 	if (m_LabelMap.count(lbl))
 	{
-		return m_LabelMap.at(lbl) - (m_InstructionList.size() + 1);
+		return m_LabelMap.at(lbl) - (m_InstructionList.size());
 	}
 
 	// Label not added yet. Check if it's in the unknown label map.

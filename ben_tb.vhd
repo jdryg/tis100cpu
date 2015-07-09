@@ -1,3 +1,5 @@
+-- Added these lines on rev. 42 in order to remove the commit message saying that 
+-- there is a bug in the implementation, since the bug has been fixed in the same rev.
 LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
  
