@@ -440,9 +440,11 @@ Program* Assemble(std::vector<TIS100Instruction*>& instructionList)
 			prog->AddMicroInstruction(new MicroInstruction(MIM_ADD, MID_BAK, MIS_ACC, MIS_NIL));
 			break;
 		case TISM_SWP:
-			prog->AddMicroInstruction(new MicroInstruction(MIM_ADD, MID_TMP, MIS_ACC, MIS_NIL));
-			prog->AddMicroInstruction(new MicroInstruction(MIM_ADD, MID_ACC, MIS_BAK, MIS_NIL));
-			prog->AddMicroInstruction(new MicroInstruction(MIM_ADD, MID_BAK, MIS_TMP, MIS_NIL));
+//			prog->AddMicroInstruction(new MicroInstruction(MIM_ADD, MID_TMP, MIS_ACC, MIS_NIL));
+//			prog->AddMicroInstruction(new MicroInstruction(MIM_ADD, MID_ACC, MIS_BAK, MIS_NIL));
+//			prog->AddMicroInstruction(new MicroInstruction(MIM_ADD, MID_BAK, MIS_TMP, MIS_NIL));
+
+			prog->AddMicroInstruction(new MicroInstruction(MIM_SWP, MID_NIL, MIS_NIL, MIS_NIL));
 			break;
 		case TISM_JMP:
 			prog->AddMicroInstruction(new MicroInstruction(MIM_JMP, MID_NIL, MIS_ACC, prog->FindLabelOffset(instr->GetJumpTarget())));

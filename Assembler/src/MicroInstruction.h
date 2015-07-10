@@ -6,6 +6,7 @@ enum MIMnemonic
 	MIM_ADD,
 	MIM_SUB,
 	MIM_NEG,
+	MIM_SWP,
 	MIM_RDP,
 	MIM_WRP,
 	MIM_JMP,

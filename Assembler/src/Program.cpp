@@ -170,6 +170,10 @@ unsigned int* Program::GetCode() const
 			instructionType = 0;
 			operation = 2;
 			break;
+		case MIM_SWP:
+			instructionType = 0;
+			operation = 4; // 100
+			break;
 		case MIM_RDP:
 			instructionType = 1;
 			operation = 0;

@@ -20,7 +20,8 @@ ARCHITECTURE behavior OF instruction_decoder_tb IS
       O_enableWrite  : OUT  std_logic;
       O_containsIMM  : OUT  std_logic;
       O_isJmp        : OUT  std_logic;
-      O_jmpCondition : OUT  std_logic_vector(2 downto 0)
+      O_jmpCondition : OUT  std_logic_vector(2 downto 0);
+      O_isSWP        : OUT  std_logic
     );
   END COMPONENT;
 
@@ -39,6 +40,7 @@ ARCHITECTURE behavior OF instruction_decoder_tb IS
   signal O_containsIMM : std_logic;
   signal O_isJmp : std_logic;
   signal O_jmpCondition : std_logic_vector(2 downto 0);
+  signal O_isSWP : std_logic;
 
 BEGIN
 	-- Instantiate the Unit Under Test (UUT)
@@ -54,7 +56,8 @@ BEGIN
     O_enableWrite => O_enableWrite,
     O_containsIMM => O_containsIMM,
     O_isJmp => O_isJmp,
-    O_jmpCondition => O_jmpCondition
+    O_jmpCondition => O_jmpCondition,
+    O_isSWP => O_isSWP
   );
 
   -- Stimulus process
@@ -73,6 +76,7 @@ BEGIN
     assert O_containsIMM = '1'    report "(1) Invalid containsIMM flag" severity error;
     assert O_isJmp = '0'          report "(1) Invalid isJmp flag" severity error;
     assert O_jmpCondition = "111" report "(1) Invalid jump condition" severity error;
+    assert O_isSWP = '0'          report "(1) Invalid SWP flag" severity error;
     report "Finished decoding 'ADD ACC, NIL, 5'";
     
     I_instr <= X"84900001";
@@ -88,6 +92,7 @@ BEGIN
     assert O_containsIMM = '1'    report "(2) Invalid containsIMM flag" severity error;
     assert O_isJmp = '0'          report "(2) Invalid isJmp flag" severity error;
     assert O_jmpCondition = "111" report "(2) Invalid jump condition" severity error;
+    assert O_isSWP = '0'          report "(2) Invalid SWP flag" severity error;
     report "Finished decoding 'SUB ACC, ACC, 1'";
 
     I_instr <= X"CC100005";
@@ -103,7 +108,24 @@ BEGIN
     assert O_containsIMM = '1'    report "(3) Invalid containsIMM flag" severity error;
     assert O_isJmp = '1'          report "(3) Invalid isJmp flag" severity error;
     assert O_jmpCondition = "011" report "(3) Invalid jump condition" severity error;
+    assert O_isSWP = '0'          report "(3) Invalid SWP flag" severity error;
     report "Finished decoding 'JMP EQUAL, 5'";
+
+    I_instr <= X"10000000";
+    wait for 10 ns;
+    assert O_dst = "000"          report "(3) Invalid dst value" severity error;
+    assert O_srcA = "000"         report "(3) Invalid srcA value" severity error;
+    assert O_srcB = "00"          report "(3) Invalid srcB value" severity error;
+    assert O_imm = X"0000"        report "(3) Invalid immediate operand value" severity error;
+    assert O_aluOp = "00"         report "(3) Invalid ALU operation" severity error;
+    assert O_srcA_isPort = '0'    report "(3) Invalid srcA_isPort flag" severity error;
+    assert O_dst_isPort = '0'     report "(3) Invalid dst_isPort flag" severity error;
+    assert O_enableWrite = '1'    report "(3) Invalid enableWrite flag" severity error;
+    assert O_containsIMM = '0'    report "(3) Invalid containsIMM flag" severity error;
+    assert O_isJmp = '0'          report "(3) Invalid isJmp flag" severity error;
+    assert O_jmpCondition = "111" report "(3) Invalid jump condition" severity error;
+    assert O_isSWP = '1'          report "(3) Invalid SWP flag" severity error;
+    report "Finished decoding 'SWP'";
     
     wait;
   end process;

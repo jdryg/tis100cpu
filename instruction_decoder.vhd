@@ -13,7 +13,8 @@ entity instruction_decoder is
          O_enableWrite : out  STD_LOGIC;
          O_containsIMM : out  STD_LOGIC;
          O_isJmp : out  STD_LOGIC;
-         O_jmpCondition : out  STD_LOGIC_VECTOR (2 downto 0));
+         O_jmpCondition : out  STD_LOGIC_VECTOR (2 downto 0);
+         O_isSWP : out STD_LOGIC);
 end instruction_decoder;
 
 architecture Behavioral of instruction_decoder is
@@ -32,6 +33,7 @@ begin
     O_enableWrite <= '0';
     O_isJmp <= '0';
     O_jmpCondition <= "111";
+    O_isSWP <= '0';
 
     -- Depending on the instruction type, set the correct outputs.
     if (I_instr(30 downto 29) = "00") then
@@ -43,6 +45,12 @@ begin
         when "010" => O_aluOp <= "10";
         when others => O_aluOp <= "00";
       end case;
+      
+      -- Special case of SWP instruction
+      if(I_instr(28 downto 26) = "100") then
+        O_isSWP <= '1';
+      end if;
+      
       -- The rest of the outputs get their default value.
     elsif (I_instr (30 downto 29) = "01") then
       -- Port instruction

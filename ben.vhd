@@ -48,6 +48,7 @@ architecture Behavioral of ben is
   signal portWriteCompleted : STD_LOGIC;
   signal isALUResultZero : STD_LOGIC;
   signal aluOpA, aluOpB : STD_LOGIC_VECTOR (15 downto 0);
+  signal swpRegs : STD_LOGIC;
   
   component reg 
     Generic(WIDTH: integer := 8);
@@ -75,19 +76,21 @@ architecture Behavioral of ben is
            O_enableWrite : out  STD_LOGIC;
            O_containsIMM : out  STD_LOGIC;
            O_isJmp : out  STD_LOGIC;
-           O_jmpCondition : out  STD_LOGIC_VECTOR (2 downto 0));
+           O_jmpCondition : out  STD_LOGIC_VECTOR (2 downto 0);
+           O_isSWP : out STD_LOGIC);
   end component;
 
   component register_file is
     generic (WIDTH : integer := 8);
     port ( I_clk : in  STD_LOGIC;
-           I_we3 : in  STD_LOGIC;
-           I_ra1 : in  STD_LOGIC_VECTOR (1 downto 0);
-           I_ra2 : in  STD_LOGIC_VECTOR (1 downto 0);
-           I_wa3 : in  STD_LOGIC_VECTOR (1 downto 0);
-           I_wd3 : in  STD_LOGIC_VECTOR (WIDTH-1 downto 0);
-           O_rd1 : out  STD_LOGIC_VECTOR (WIDTH-1 downto 0);
-           O_rd2 : out  STD_LOGIC_VECTOR (WIDTH-1 downto 0));
+           I_swp : in  STD_LOGIC;
+           I_enableWrite : in  STD_LOGIC;
+           I_srcAID : in  STD_LOGIC_VECTOR (1 downto 0);
+           I_srcBID : in  STD_LOGIC_VECTOR (1 downto 0);
+           I_dstID : in  STD_LOGIC_VECTOR (1 downto 0);
+           I_dstData : in  STD_LOGIC_VECTOR (WIDTH-1 downto 0);
+           O_srcAData : out  STD_LOGIC_VECTOR (WIDTH-1 downto 0);
+           O_srcBData : out  STD_LOGIC_VECTOR (WIDTH-1 downto 0));
   end component;
   
   component node_port_readdec is
@@ -201,7 +204,8 @@ begin
       O_enableWrite => enableWrite, 
       O_containsIMM => containsIMM, 
       O_isJmp => isJmp, 
-      O_jmpCondition => jmpCondition
+      O_jmpCondition => jmpCondition,
+      O_isSWP => swpRegs
   );
 
   -- Register file
@@ -209,13 +213,14 @@ begin
     generic map (WIDTH => 16) 
     port map(
       I_clk => I_clk, 
-      I_we3 => (NOT dst_isPort) AND enableWrite, 
-      I_ra1 => srcA (1 downto 0), 
-      I_ra2 => srcB (1 downto 0), 
-      I_wa3 => dst(1 downto 0), 
-      I_wd3 => aluResult, 
-      O_rd1 => regA_data, 
-      O_rd2 => regB_data
+      I_swp => swpRegs,
+      I_enableWrite => (NOT dst_isPort) AND enableWrite, 
+      I_srcAID => srcA (1 downto 0), 
+      I_srcBID => srcB (1 downto 0), 
+      I_dstID => dst(1 downto 0), 
+      I_dstData => aluResult, 
+      O_srcAData => regA_data, 
+      O_srcBData => regB_data
   );
   
   -- Port Reader decoder

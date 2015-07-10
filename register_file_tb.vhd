@@ -13,27 +13,29 @@ ARCHITECTURE behavior OF register_file_tb IS
   GENERIC (WIDTH : integer := REG_SIZE);
   PORT(
     I_clk : IN  std_logic;
-    I_we3 : IN  std_logic;
-    I_ra1 : IN  std_logic_vector(1 downto 0);
-    I_ra2 : IN  std_logic_vector(1 downto 0);
-    I_wa3 : IN  std_logic_vector(1 downto 0);
-    I_wd3 : IN  std_logic_vector(WIDTH-1 downto 0);
-    O_rd1 : OUT  std_logic_vector(WIDTH-1 downto 0);
-    O_rd2 : OUT  std_logic_vector(WIDTH-1 downto 0)
+    I_swp : IN  std_logic;
+    I_enableWrite : IN  std_logic;
+    I_srcAID : IN  std_logic_vector(1 downto 0);
+    I_srcBID : IN  std_logic_vector(1 downto 0);
+    I_dstID : IN  std_logic_vector(1 downto 0);
+    I_dstData : IN  std_logic_vector(WIDTH-1 downto 0);
+    O_srcAData : OUT  std_logic_vector(WIDTH-1 downto 0);
+    O_srcBData : OUT  std_logic_vector(WIDTH-1 downto 0)
   );
   END COMPONENT;
 
   --Inputs
   signal I_clk : std_logic := '0';
-  signal I_we3 : std_logic := '0';
-  signal I_ra1 : std_logic_vector(1 downto 0) := (others => '0');
-  signal I_ra2 : std_logic_vector(1 downto 0) := (others => '0');
-  signal I_wa3 : std_logic_vector(1 downto 0) := (others => '0');
-  signal I_wd3 : std_logic_vector(REG_SIZE-1 downto 0) := (others => '0');
+  signal I_swp : std_logic := '0';
+  signal I_enableWrite : std_logic := '0';
+  signal I_srcAID : std_logic_vector(1 downto 0) := (others => '0');
+  signal I_srcBID : std_logic_vector(1 downto 0) := (others => '0');
+  signal I_dstID : std_logic_vector(1 downto 0) := (others => '0');
+  signal I_dstData : std_logic_vector(REG_SIZE-1 downto 0) := (others => '0');
 
  	--Outputs
-  signal O_rd1 : std_logic_vector(REG_SIZE-1 downto 0);
-  signal O_rd2 : std_logic_vector(REG_SIZE-1 downto 0);
+  signal O_srcAData : std_logic_vector(REG_SIZE-1 downto 0);
+  signal O_srcBData : std_logic_vector(REG_SIZE-1 downto 0);
 
   -- Clock period definitions
   constant I_clk_period : time := 10 ns;
@@ -44,13 +46,14 @@ BEGIN
     GENERIC MAP (WIDTH => REG_SIZE)
     PORT MAP (
           I_clk => I_clk,
-          I_we3 => I_we3,
-          I_ra1 => I_ra1,
-          I_ra2 => I_ra2,
-          I_wa3 => I_wa3,
-          I_wd3 => I_wd3,
-          O_rd1 => O_rd1,
-          O_rd2 => O_rd2
+          I_swp => I_swp,
+          I_enableWrite => I_enableWrite,
+          I_srcAID => I_srcAID,
+          I_srcBID => I_srcBID,
+          I_dstID => I_dstID,
+          I_dstData => I_dstData,
+          O_srcAData => O_srcAData,
+          O_srcBData => O_srcBData
         );
 
   -- Clock process definitions 
@@ -66,50 +69,58 @@ BEGIN
   stim_proc: process
   begin		
     -- Write the NIL register
-    I_we3 <= '1';
-    I_wd3 <= X"0001";
-    I_wa3 <= "00";
+    I_enableWrite <= '1';
+    I_dstData <= X"0001";
+    I_dstID <= "00";
     wait for I_clk_period;
 
     -- Verify that reading the NIL register always returns 0
-    I_ra1 <= "00";
+    I_srcAID <= "00";
     wait for I_clk_period;
-    assert O_rd1 = X"0000" report "Error, NIL register != 0" severity ERROR;
---    assert O_rd1 /= X"0000" report "Reading NIL register produced 0 even after it was written" severity NOTE;
+    assert O_srcAData = X"0000" report "Error, NIL register != 0" severity ERROR;
 
     -- Write the ACC register and verify it was written correctly.
-    I_we3 <= '1';
-    I_wd3 <= X"0acc";
-    I_wa3 <= "01";
+    I_enableWrite <= '1';
+    I_dstData <= X"0acc";
+    I_dstID <= "01";
     wait for I_clk_period;
-    I_ra1 <= "01";
+    I_srcAID <= "01";
     wait for I_clk_period;
-    assert O_rd1 = X"0acc" report "Error, ACC register not written correctly" severity ERROR;
---    assert O_rd1 /= X"0acc" report "ACC written and read correctly" severity NOTE;
+    assert O_srcAData = X"0acc" report "Error, ACC register not written correctly" severity ERROR;
 
     -- Write the BAK register and read both ACC and back at the same time.
-    I_we3 <= '1';
-    I_wd3 <= X"bacc";
-    I_wa3 <= "10";
+    I_enableWrite <= '1';
+    I_dstData <= X"bacc";
+    I_dstID <= "10";
     wait for I_clk_period;
-    I_ra1 <= "10";
-    I_ra2 <= "01";
+    I_srcAID <= "10";
+    I_srcBID <= "01";
     wait for I_clk_period;
-    assert O_rd1 = X"bacc" report "Error, BAK register not written correctly" severity ERROR;
-    assert O_rd2 = X"0acc" report "Error, ACC register not read correctly. Should have the last value." severity ERROR;
---    assert O_rd1 /= X"bacc" report "BAK written and read correctly" severity NOTE;
---    assert O_rd2 /= X"0acc" report "ACC read correctly for the second time." severity NOTE;
+    assert O_srcAData = X"bacc" report "Error, BAK register not written correctly" severity ERROR;
+    assert O_srcBData = X"0acc" report "Error, ACC register not read correctly. Should have the last value." severity ERROR;
 
     -- Write the TMP register and verify it was written correctly.
-    I_we3 <= '1';
-    I_wd3 <= X"1234";
-    I_wa3 <= "11";
+    I_enableWrite <= '1';
+    I_dstData <= X"1234";
+    I_dstID <= "11";
     wait for I_clk_period;
-    I_ra1 <= "11";
+    I_srcAID <= "11";
     wait for I_clk_period;
-    assert O_rd1 = X"1234" report "Error, TMP register not written correctly" severity ERROR;
---    assert O_rd1 /= X"1234" report "TMP written and read correctly" severity NOTE;
+    assert O_srcAData = X"1234" report "Error, TMP register not written correctly" severity ERROR;
+    
+    -- SWP
+    I_swp <= '1';
+    wait for I_clk_period;
+    
+    -- Read ACC (should have the last value of BAK)
+    I_swp <= '0';
+    I_srcAID <= "01";
+    I_srcBID <= "10";
+    wait for I_clk_period;
+    assert O_srcAData = X"bacc" report "Error, SWP didn't work correctly" severity ERROR;
 
+    -- SWP regs in every clock cycle, till the end of times!
+    I_swp <= '1';
     wait;
   end process;
 END;
