@@ -14,7 +14,8 @@ entity instruction_decoder is
          O_containsIMM : out  STD_LOGIC;
          O_isJmp : out  STD_LOGIC;
          O_jmpCondition : out  STD_LOGIC_VECTOR (2 downto 0);
-         O_isSWP : out STD_LOGIC);
+         O_isSWP : out STD_LOGIC;
+         O_isLastInstr : out STD_LOGIC);
 end instruction_decoder;
 
 architecture Behavioral of instruction_decoder is
@@ -24,7 +25,8 @@ begin
     O_dst <= I_instr(25 downto 23);
     O_srcA <= I_instr(22 downto 20);
     O_srcB <= I_instr(19 downto 18);
-    O_imm <= I_instr(15 downto 0);   
+    O_imm <= I_instr(15 downto 0);
+    O_isLastInstr <= I_instr(16);
 
     -- Default values for the rest of the signals
     O_aluOp <= "00";

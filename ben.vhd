@@ -48,7 +48,7 @@ architecture Behavioral of ben is
   signal portWriteCompleted : STD_LOGIC;
   signal isALUResultZero : STD_LOGIC;
   signal aluOpA, aluOpB : STD_LOGIC_VECTOR (15 downto 0);
-  signal swpRegs : STD_LOGIC;
+  signal swpRegs, isLastInstr : STD_LOGIC;
   
   component reg 
     Generic(WIDTH: integer := 8);
@@ -77,7 +77,8 @@ architecture Behavioral of ben is
            O_containsIMM : out  STD_LOGIC;
            O_isJmp : out  STD_LOGIC;
            O_jmpCondition : out  STD_LOGIC_VECTOR (2 downto 0);
-           O_isSWP : out STD_LOGIC);
+           O_isSWP : out STD_LOGIC;
+           O_isLastInstr : out STD_LOGIC);
   end component;
 
   component register_file is
@@ -178,7 +179,7 @@ begin
     generic map(WIDTH => 6) 
     port map(
       I_clk => I_clk, 
-      I_reset => I_reset, 
+      I_reset => I_reset OR isLastInstr, -- Enhancement #2: Zero cycle jump to top
       I_dataIn => NewPC, 
       O_dataOut => PC
   );
@@ -205,7 +206,8 @@ begin
       O_containsIMM => containsIMM, 
       O_isJmp => isJmp, 
       O_jmpCondition => jmpCondition,
-      O_isSWP => swpRegs
+      O_isSWP => swpRegs, -- Enhancement #1: Single cycle SWP
+      O_isLastInstr => isLastInstr -- Enhancement #2: Zero cycle jump to top
   );
 
   -- Register file
@@ -213,7 +215,7 @@ begin
     generic map (WIDTH => 16) 
     port map(
       I_clk => I_clk, 
-      I_swp => swpRegs,
+      I_swp => swpRegs, -- Enhancement #1: Single cycle SWP
       I_enableWrite => (NOT dst_isPort) AND enableWrite, 
       I_srcAID => srcA (1 downto 0), 
       I_srcBID => srcB (1 downto 0), 

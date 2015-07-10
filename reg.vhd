@@ -12,11 +12,11 @@ end reg;
 
 architecture Behavioral of reg is
 begin
-  process (I_clk, I_reset) begin
-    if(I_reset = '1') then
-      O_dataOut <= (others => '0');
-    else
-      if (rising_edge(I_clk)) then
+  process (I_clk) begin
+    if (rising_edge(I_clk)) then
+      if(I_reset = '1') then
+        O_dataOut <= (others => '0');
+      else
         O_dataOut <= I_dataIn;
       end if;
     end if;

@@ -107,7 +107,7 @@ unsigned int* Program::GetCode() const
 	unsigned int* imem = new unsigned int[numInstructions];
 	memset(imem, 0, sizeof(unsigned int) * numInstructions);
 
-	for (unsigned int i = 0; i < numInstructions;++i)
+	for (unsigned int i = 0; i < numInstructions; ++i)
 	{
 		MicroInstruction* mi = m_InstructionList[i];
 
@@ -216,6 +216,9 @@ unsigned int* Program::GetCode() const
 
 		imem[i] = opcode;
 	}
+
+	// Raise the 'reset PC' flag on the last instruction.
+	imem[numInstructions - 1] |= 1 << 16;
 
 	return imem;
 }

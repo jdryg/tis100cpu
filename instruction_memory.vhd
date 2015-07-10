@@ -44,7 +44,7 @@ architecture Behavioral of instruction_memory is
 --  );
 
   -- Sample program #1: ACC = 5 * 3
-  -- Version 2 with SWP instruction.
+  -- Version 2 with dedicated SWP instruction + last instruction flag
   constant ROM: IMEM := (
     -- MOV 5, ACC   # iteration_counter = 5;
     X"80800005", -- ADD ACC, NIL, 5
@@ -65,7 +65,7 @@ architecture Behavioral of instruction_memory is
     -- JMP LOOP     # goto LOOP;
     X"C010FFFB", -- JMP ALWAYS, -5
     -- END: SWP     # ACC = res (= 5 * 3)
-    X"10000000", -- SWP
+    X"10010000", -- SWP + last instruction
     X"00000000", -- NOP
     X"00000000", -- NOP
     X"00000000", -- NOP
