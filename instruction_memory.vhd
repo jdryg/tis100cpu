@@ -45,27 +45,51 @@ architecture Behavioral of instruction_memory is
 
   -- Sample program #1: ACC = 5 * 3
   -- Version 2 with dedicated SWP instruction + last instruction flag
+--  constant ROM: IMEM := (
+--    -- MOV 5, ACC   # iteration_counter = 5;
+--    X"80800005", -- ADD ACC, NIL, 5
+--    -- SAV          # BAK = iteration_counter;
+--    X"01100000", -- ADD BAK, ACC, NIL
+--    -- MOV 0, ACC   # res = 0;
+--    X"80800000", -- ADD ACC, NIL, 0
+--    -- LOOP: ADD 3  # res += 3;
+--    X"80900003", -- ADD ACC, ACC, 3
+--    -- SWP          # ACC = iteration_counter; BAK = res;
+--    X"10000000", -- SWP
+--    -- SUB 1        # iteration_counter -= 1;
+--    X"84900001", -- SUB ACC, ACC, 1
+--    -- JEZ END      # if (iteration_counter == 0) goto END;
+--    X"CC100003", -- JMP EQUAL, 3
+--    -- SWP          # ACC = res; BAK = iteration_counter;
+--    X"10000000", -- SWP
+--    -- JMP LOOP     # goto LOOP;
+--    X"C010FFFB", -- JMP ALWAYS, -5
+--    -- END: SWP     # ACC = res (= 5 * 3)
+--    X"10010000", -- SWP + last instruction
+--    X"00000000", -- NOP
+--    X"00000000", -- NOP
+--    X"00000000", -- NOP
+--    X"00000000", -- NOP
+--    X"00000000", -- NOP
+--    X"00000000"  -- NOP
+--  );
+
+  -- Sample program #2: Read UP port, double the value and write the result to the DOWN port
+  -- Version 1 with dedicated port instructions (RDP, WRP)
   constant ROM: IMEM := (
-    -- MOV 5, ACC   # iteration_counter = 5;
-    X"80800005", -- ADD ACC, NIL, 5
-    -- SAV          # BAK = iteration_counter;
-    X"01100000", -- ADD BAK, ACC, NIL
-    -- MOV 0, ACC   # res = 0;
-    X"80800000", -- ADD ACC, NIL, 0
-    -- LOOP: ADD 3  # res += 3;
-    X"80900003", -- ADD ACC, ACC, 3
-    -- SWP          # ACC = iteration_counter; BAK = res;
-    X"10000000", -- SWP
-    -- SUB 1        # iteration_counter -= 1;
-    X"84900001", -- SUB ACC, ACC, 1
-    -- JEZ END      # if (iteration_counter == 0) goto END;
-    X"CC100003", -- JMP EQUAL, 3
-    -- SWP          # ACC = res; BAK = iteration_counter;
-    X"10000000", -- SWP
-    -- JMP LOOP     # goto LOOP;
-    X"C010FFFB", -- JMP ALWAYS, -5
-    -- END: SWP     # ACC = res (= 5 * 3)
-    X"10010000", -- SWP + last instruction
+    -- MOV UP, ACC   # ACC = a = readPort(UP);
+    X"20800000", 
+    -- ADD ACC       # ACC += ACC;
+    X"00940000",
+    -- MOV ACC, DOWN # writePort(DOWN, ACC);
+    X"24910000",
+    X"00000000", -- NOP
+    X"00000000", -- NOP
+    X"00000000", -- NOP
+    X"00000000", -- NOP
+    X"00000000", -- NOP
+    X"00000000", -- NOP
+    X"00000000", -- NOP
     X"00000000", -- NOP
     X"00000000", -- NOP
     X"00000000", -- NOP

@@ -2,6 +2,7 @@
 -- there is a bug in the implementation, since the bug has been fixed in the same rev.
 LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
+USE ieee.numeric_std.ALL;
  
 ENTITY ben_tb IS
 END ben_tb;
@@ -107,15 +108,47 @@ BEGIN
           O_prr_readEnable => O_prr_readEnable
         );
 
-   -- Clock process definitions
-   I_clk_process :process
-   begin
-		I_clk <= '0';
+  -- Clock process definitions
+  I_clk_process :process
+  begin
+    I_clk <= '0';
 		wait for I_clk_period/2;
 		I_clk <= '1';
 		wait for I_clk_period/2;
-   end process;
+  end process;
  
+  -- UP node for sample program #2
+  up_proc: process 
+    variable a : integer range 0 to 15;
+  begin
+    a := 0;
+    while (a <= 15) loop
+      -- Write a to the DOWN port
+      I_pur_data <= std_logic_vector(to_signed(a, I_pur_data'length));
+      I_pur_dataValid <= '1';
+      
+      -- Wait until the read enable flag is set for this port.
+      wait until O_pur_readEnable = '1';
+      
+      I_pur_dataValid <= '0';
+      a := a + 1;
+    end loop;
+  end process;
+  
+  -- DOWN node for sample program #2
+  down_proc: process
+  begin
+    I_pdw_dataValid <= '0';
+    
+    -- Wait until the write flag is set for this port.
+    wait until O_pdw_writeEnable = '1';
+    
+    I_pdw_dataValid <= '1';
+    report "Input to DOWN port is " & integer'image(to_integer(unsigned(O_pdw_data)));
+
+    wait for I_clk_period;
+  end process;
+
   -- Stimulus process
   stim_proc: process
   begin

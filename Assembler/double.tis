@@ -1,0 +1,4 @@
+# Double the value read from the UP port and write it to the DOWN port
+MOV UP, ACC   # ACC = a = readPort(UP);
+ADD ACC       # ACC += ACC;
+MOV ACC, DOWN # writePort(DOWN, ACC);

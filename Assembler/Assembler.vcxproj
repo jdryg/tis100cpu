@@ -83,6 +83,7 @@
     <ClCompile Include="src\TIS100Instruction.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="double.tis" />
     <None Include="multiply.tis" />
   </ItemGroup>
   <ItemGroup>
