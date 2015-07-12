@@ -204,7 +204,7 @@ void GenericParser::SkipComments(void)
 		if(m_String[m_CurPos] == '#')
 		{
 			// Single-line comment
-			while (m_String[m_CurPos] != '\n' && m_String[m_CurPos] != '\r')
+			while (m_String[m_CurPos] != '\n' && m_String[m_CurPos] != '\r' && m_String[m_CurPos] != '\0')
 			{
 				++m_CurPos;
 			}
