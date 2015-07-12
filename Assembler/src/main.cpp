@@ -343,8 +343,8 @@ Program* Assemble(std::vector<TIS100Instruction*>& instructionList)
 			case TISS_IMM:
 				if (instr->IsDestinationPort())
 				{
-					// MOV imm, port => WRP port, imm
-					prog->AddMicroInstruction(new MicroInstruction(MIM_WRP, TIStoMIDestination(instr->GetDestination()), MIS_NIL, instr->GetImmediate()));
+					// MOV imm, port => ADDP port, NIL, imm
+					prog->AddMicroInstruction(new MicroInstruction(MIM_ADDP, TIStoMIDestination(instr->GetDestination()), MIS_NIL, instr->GetImmediate()));
 				}
 				else
 				{
@@ -358,24 +358,16 @@ Program* Assemble(std::vector<TIS100Instruction*>& instructionList)
 			case TISS_PORT_RIGHT:
 			case TISS_PORT_ANY:
 			case TISS_PORT_LAST:
-				if (instr->IsDestinationPort())
-				{
-					// MOV portS, portD => RDP TMP, portS; WRP portD, TMP;
-					prog->AddMicroInstruction(new MicroInstruction(MIM_RDP, MID_TMP, TIStoMISource(instr->GetSource()), MIS_NIL));
-					prog->AddMicroInstruction(new MicroInstruction(MIM_WRP, TIStoMIDestination(instr->GetDestination()), MIS_TMP, MIS_NIL));
-				}
-				else
-				{
-					// MOV port, reg => RDP reg, port
-					prog->AddMicroInstruction(new MicroInstruction(MIM_RDP, TIStoMIDestination(instr->GetDestination()), TIStoMISource(instr->GetSource()), MIS_NIL));
-				}
+				// MOV portS, portD => ADDP portD, portS, NIL or
+				// MOV port, reg => ADDP reg, port, NIL
+				prog->AddMicroInstruction(new MicroInstruction(MIM_ADDP, TIStoMIDestination(instr->GetDestination()), TIStoMISource(instr->GetSource()), MIS_NIL));
 				break;
 			case TISS_ACC:
 			case TISS_NIL:
 				if (instr->IsDestinationPort())
 				{
 					// MOV reg, port => WRP port, reg
-					prog->AddMicroInstruction(new MicroInstruction(MIM_WRP, TIStoMIDestination(instr->GetDestination()), TIStoMISource(instr->GetSource()), MIS_NIL));
+					prog->AddMicroInstruction(new MicroInstruction(MIM_ADDP, TIStoMIDestination(instr->GetDestination()), TIStoMISource(instr->GetSource()), MIS_NIL));
 				}
 				else
 				{
@@ -398,9 +390,8 @@ Program* Assemble(std::vector<TIS100Instruction*>& instructionList)
 			case TISS_PORT_RIGHT:
 			case TISS_PORT_ANY:
 			case TISS_PORT_LAST:
-				// ADD port => RDP TMP, port; ADD ACC, ACC, TMP
-				prog->AddMicroInstruction(new MicroInstruction(MIM_RDP, MID_TMP, TIStoMISource(instr->GetSource()), MIS_NIL));
-				prog->AddMicroInstruction(new MicroInstruction(MIM_ADD, MID_ACC, MIS_ACC, MIS_TMP));
+				// ADD port => ADD ACC, port, ACC
+				prog->AddMicroInstruction(new MicroInstruction(MIM_ADDP, MID_ACC, TIStoMISource(instr->GetSource()), MIS_ACC));
 				break;
 			case TISS_ACC:
 			case TISS_NIL:
@@ -422,9 +413,8 @@ Program* Assemble(std::vector<TIS100Instruction*>& instructionList)
 			case TISS_PORT_RIGHT:
 			case TISS_PORT_ANY:
 			case TISS_PORT_LAST:
-				// SUB port => RDP TMP, port; SUB ACC, ACC, TMP
-				prog->AddMicroInstruction(new MicroInstruction(MIM_RDP, MID_TMP, TIStoMISource(instr->GetSource()), MIS_NIL));
-				prog->AddMicroInstruction(new MicroInstruction(MIM_SUB, MID_ACC, MIS_ACC, MIS_TMP));
+				// SUB port => ISUBP ACC, port, ACC
+				prog->AddMicroInstruction(new MicroInstruction(MIM_ISUBP, MID_ACC, TIStoMISource(instr->GetSource()), MIS_ACC));
 				break;
 			case TISS_ACC:
 			case TISS_NIL:
@@ -440,10 +430,6 @@ Program* Assemble(std::vector<TIS100Instruction*>& instructionList)
 			prog->AddMicroInstruction(new MicroInstruction(MIM_ADD, MID_BAK, MIS_ACC, MIS_NIL));
 			break;
 		case TISM_SWP:
-//			prog->AddMicroInstruction(new MicroInstruction(MIM_ADD, MID_TMP, MIS_ACC, MIS_NIL));
-//			prog->AddMicroInstruction(new MicroInstruction(MIM_ADD, MID_ACC, MIS_BAK, MIS_NIL));
-//			prog->AddMicroInstruction(new MicroInstruction(MIM_ADD, MID_BAK, MIS_TMP, MIS_NIL));
-
 			prog->AddMicroInstruction(new MicroInstruction(MIM_SWP, MID_NIL, MIS_NIL, MIS_NIL));
 			break;
 		case TISM_JMP:
@@ -474,9 +460,8 @@ Program* Assemble(std::vector<TIS100Instruction*>& instructionList)
 			case TISS_PORT_RIGHT:
 			case TISS_PORT_ANY:
 			case TISS_PORT_LAST:
-				// JRO port => RDP TMP, port; JRO TMP
-				prog->AddMicroInstruction(new MicroInstruction(MIM_RDP, MID_TMP, TIStoMISource(instr->GetSource()), MIS_NIL));
-				prog->AddMicroInstruction(new MicroInstruction(MIM_JRO, MID_NIL, MIS_ACC, MIS_TMP));
+				// JRO port => JRO port
+				prog->AddMicroInstruction(new MicroInstruction(MIM_JRO, MID_NIL, TIStoMISource(instr->GetSource()), MIS_NIL));
 				break;
 			case TISS_ACC:
 			case TISS_NIL:
@@ -520,8 +505,8 @@ int main(int argc, char** argv)
 {
 	// TODO: Parse input arguments
 
-	const char* inputFile = "double.tis";
-	const char* outputFile = "double.prg";
+	const char* inputFile = "sample3.tis";
+	const char* outputFile = "sample3.prg";
 
 	// Parse input file and retrieve all the instructions
 	std::vector<TIS100Instruction*> instructionList;

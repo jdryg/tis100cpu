@@ -39,7 +39,7 @@ architecture Behavioral of ben is
   signal dst, srcA : STD_LOGIC_VECTOR (2 downto 0);
   signal srcB : STD_LOGIC_VECTOR (1 downto 0);
   signal imm : STD_LOGIC_VECTOR (15 downto 0);
-  signal aluOp : STD_LOGIC_VECTOR (1 downto 0);
+  signal aluOp : STD_LOGIC_VECTOR (2 downto 0);
   signal srcA_isPort, dst_isPort, enableWrite, containsIMM, isJmp : STD_LOGIC;
   signal jmpCondition : STD_LOGIC_VECTOR (2 downto 0);
   signal aluResult, regA_data, regB_data : STD_LOGIC_VECTOR (15 downto 0);
@@ -70,7 +70,7 @@ architecture Behavioral of ben is
            O_srcA : out  STD_LOGIC_VECTOR (2 downto 0);
            O_srcB : out  STD_LOGIC_VECTOR (1 downto 0);
            O_imm : out  STD_LOGIC_VECTOR (15 downto 0);
-           O_aluOp: out STD_LOGIC_VECTOR (1 downto 0);
+           O_aluOp: out STD_LOGIC_VECTOR (2 downto 0);
            O_srcA_isPort : out  STD_LOGIC;
            O_dst_isPort : out  STD_LOGIC;
            O_enableWrite : out  STD_LOGIC;
@@ -95,7 +95,8 @@ architecture Behavioral of ben is
   end component;
   
   component node_port_readdec is
-    port ( I_portID : in  STD_LOGIC_VECTOR (2 downto 0);
+    port ( I_clk : in STD_LOGIC;
+           I_portID : in  STD_LOGIC_VECTOR (2 downto 0);
            I_readEnable : in  STD_LOGIC;
            O_readEnableUp : out  STD_LOGIC;
            O_readEnableDown : out  STD_LOGIC;
@@ -144,8 +145,9 @@ architecture Behavioral of ben is
   
   component alu is
     generic (WIDTH: integer := 8);
-    port ( I_a, I_b : in  STD_LOGIC_VECTOR (WIDTH-1 downto 0);
-           I_op     : in  STD_LOGIC_VECTOR (1 downto 0);
+    port ( I_clk    : in STD_LOGIC;
+           I_a, I_b : in  STD_LOGIC_VECTOR (WIDTH-1 downto 0);
+           I_op     : in  STD_LOGIC_VECTOR (2 downto 0);
            O_isZero : out STD_LOGIC;
            O_y      : buffer  STD_LOGIC_VECTOR (WIDTH-1 downto 0));
   end component;
@@ -228,6 +230,7 @@ begin
   -- Port Reader decoder
   portReaderDecoder: node_port_readdec 
     port map(
+      I_clk => I_clk,
       I_portID => srcA,
       I_readEnable => srcA_isPort AND enableWrite,
       O_readEnableUp => O_pur_readEnable,
@@ -304,6 +307,7 @@ begin
   arithmeticLogicUnit: alu
     generic map(WIDTH => 16)
     port map(
+      I_clk => I_clk,
       I_a => aluOpA,
       I_b => aluOpB,
       I_op => aluOp,

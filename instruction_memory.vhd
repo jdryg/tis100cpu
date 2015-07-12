@@ -76,15 +76,40 @@ architecture Behavioral of instruction_memory is
 
   -- Sample program #2: Read UP port, double the value and write the result to the DOWN port
   -- Version 1 with dedicated port instructions (RDP, WRP)
+--  constant ROM: IMEM := (
+--    -- MOV UP, ACC   # ACC = a = readPort(UP);
+--    X"20800000", 
+--    -- ADD ACC       # ACC += ACC;
+--    X"00940000",
+--    -- MOV ACC, DOWN # writePort(DOWN, ACC);
+--    X"24910000",
+--    X"00000000", -- NOP
+--    X"00000000", -- NOP
+--    X"00000000", -- NOP
+--    X"00000000", -- NOP
+--    X"00000000", -- NOP
+--    X"00000000", -- NOP
+--    X"00000000", -- NOP
+--    X"00000000", -- NOP
+--    X"00000000", -- NOP
+--    X"00000000", -- NOP
+--    X"00000000", -- NOP
+--    X"00000000", -- NOP
+--    X"00000000"  -- NOP
+--  );
+
+  -- Sample program #3: New single cycle port instructions (https://github.com/jdryg/tis100cpu/wiki/Sample-program-%233-(single-cyle-port-instructions))
   constant ROM: IMEM := (
     -- MOV UP, ACC   # ACC = a = readPort(UP);
-    X"20800000", 
-    -- ADD ACC       # ACC += ACC;
-    X"00940000",
-    -- MOV ACC, DOWN # writePort(DOWN, ACC);
-    X"24910000",
-    X"00000000", -- NOP
-    X"00000000", -- NOP
+    X"20800000", -- ADD ACC, UP, NIL
+    -- ADD UP        # ACC += b = readPort(UP);
+    X"20840000", -- ACC ACC, UP, ACC
+    -- SUB UP        # ACC -= c = readPort(UP);
+    X"2C840000", -- ISUB ACC, UP, ACC
+    -- MOV ACC, LEFT # writePort(LEFT, ACC);
+    X"25100000", -- ADD LEFT, ACC, NIL
+    -- MOV UP, DOWN  # writePort(DOWN, d = readPort(UP));
+    X"28810000", -- ADD DOWN, UP, NIL
     X"00000000", -- NOP
     X"00000000", -- NOP
     X"00000000", -- NOP

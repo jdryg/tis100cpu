@@ -115,29 +115,31 @@ unsigned int* Program::GetCode() const
 		unsigned int imm = mi->GetImmediate();
 
 		unsigned int dst = 0;
+		bool dstIsPort = false;
 		switch (mi->GetDestination())
 		{
 		case MID_NIL:        dst = 0; break;
 		case MID_ACC:        dst = 1; break;
 		case MID_BAK:        dst = 2; break;
 		case MID_TMP:        dst = 3; break;
-		case MID_PORT_UP:    dst = 0; break;
-		case MID_PORT_DOWN:  dst = 1; break;
-		case MID_PORT_LEFT:  dst = 2; break;
-		case MID_PORT_RIGHT: dst = 3; break;
+		case MID_PORT_UP:    dst = 0; dstIsPort = true;  break;
+		case MID_PORT_DOWN:  dst = 1; dstIsPort = true; break;
+		case MID_PORT_LEFT:  dst = 2; dstIsPort = true; break;
+		case MID_PORT_RIGHT: dst = 3; dstIsPort = true; break;
 		}
 
 		unsigned int srcA = 0;
+		bool srcAIsPort = false;
 		switch (mi->GetSourceA())
 		{
 		case MIS_NIL:        srcA = 0; break;
 		case MIS_ACC:        srcA = 1; break;
 		case MIS_BAK:        srcA = 2; break;
 		case MIS_TMP:        srcA = 3; break;
-		case MIS_PORT_UP:    srcA = 0; break;
-		case MIS_PORT_DOWN:  srcA = 1; break;
-		case MIS_PORT_LEFT:  srcA = 2; break;
-		case MIS_PORT_RIGHT: srcA = 3; break;
+		case MIS_PORT_UP:    srcA = 0; srcAIsPort = true; break;
+		case MIS_PORT_DOWN:  srcA = 1; srcAIsPort = true; break;
+		case MIS_PORT_LEFT:  srcA = 2; srcAIsPort = true; break;
+		case MIS_PORT_RIGHT: srcA = 3; srcAIsPort = true; break;
 		}
 
 		unsigned int srcB = 0;
@@ -174,13 +176,27 @@ unsigned int* Program::GetCode() const
 			instructionType = 0;
 			operation = 4; // 100
 			break;
-		case MIM_RDP:
+//		case MIM_RDP:
+//			instructionType = 1;
+//			operation = 0;
+//			break;
+//		case MIM_WRP:
+//			instructionType = 1;
+//			operation = 1;
+//			break;
+		case MIM_ADDP:
 			instructionType = 1;
-			operation = 0;
+			if (srcAIsPort && !dstIsPort) {
+				operation = 0;
+			} else if (!srcAIsPort && dstIsPort) {
+				operation = 1;
+			} else if (srcAIsPort && dstIsPort) {
+				operation = 2;
+			}
 			break;
-		case MIM_WRP:
+		case MIM_ISUBP:
 			instructionType = 1;
-			operation = 1;
+			operation = 3;
 			break;
 		case MIM_JMP:
 		case MIM_JRO:

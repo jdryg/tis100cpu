@@ -14,14 +14,15 @@ ARCHITECTURE behavior OF instruction_decoder_tb IS
       O_srcA         : OUT  std_logic_vector(2 downto 0);
       O_srcB         : OUT  std_logic_vector(1 downto 0);
       O_imm          : OUT  std_logic_vector(15 downto 0);
-      O_aluOp        : OUT  std_logic_vector(1 downto 0);
+      O_aluOp        : OUT  std_logic_vector(2 downto 0);
       O_srcA_isPort  : OUT  std_logic;
       O_dst_isPort   : OUT  std_logic;
       O_enableWrite  : OUT  std_logic;
       O_containsIMM  : OUT  std_logic;
       O_isJmp        : OUT  std_logic;
       O_jmpCondition : OUT  std_logic_vector(2 downto 0);
-      O_isSWP        : OUT  std_logic
+      O_isSWP        : OUT  std_logic;
+      O_isLastInstr  : OUT  std_logic
     );
   END COMPONENT;
 
@@ -33,7 +34,7 @@ ARCHITECTURE behavior OF instruction_decoder_tb IS
   signal O_srcA : std_logic_vector(2 downto 0);
   signal O_srcB : std_logic_vector(1 downto 0);
   signal O_imm : std_logic_vector(15 downto 0);
-  signal O_aluOp : std_logic_vector(1 downto 0);
+  signal O_aluOp : std_logic_vector(2 downto 0);
   signal O_srcA_isPort : std_logic;
   signal O_dst_isPort : std_logic;
   signal O_enableWrite : std_logic;
@@ -41,6 +42,7 @@ ARCHITECTURE behavior OF instruction_decoder_tb IS
   signal O_isJmp : std_logic;
   signal O_jmpCondition : std_logic_vector(2 downto 0);
   signal O_isSWP : std_logic;
+  signal O_isLastInstr : std_logic;
 
 BEGIN
 	-- Instantiate the Unit Under Test (UUT)
@@ -57,7 +59,8 @@ BEGIN
     O_containsIMM => O_containsIMM,
     O_isJmp => O_isJmp,
     O_jmpCondition => O_jmpCondition,
-    O_isSWP => O_isSWP
+    O_isSWP => O_isSWP,
+    O_isLastInstr => O_isLastInstr
   );
 
   -- Stimulus process
@@ -69,7 +72,7 @@ BEGIN
     assert O_srcA = "000"         report "(1) Invalid srcA value" severity error;
     assert O_srcB = "00"          report "(1) Invalid srcB value" severity error;
     assert O_imm = X"0005"        report "(1) Invalid immediate operand value" severity error;
-    assert O_aluOp = "00"         report "(1) Invalid ALU operation" severity error;
+    assert O_aluOp = "000"        report "(1) Invalid ALU operation" severity error;
     assert O_srcA_isPort = '0'    report "(1) Invalid srcA_isPort flag" severity error;
     assert O_dst_isPort = '0'     report "(1) Invalid dst_isPort flag" severity error;
     assert O_enableWrite = '1'    report "(1) Invalid enableWrite flag" severity error;
@@ -77,6 +80,7 @@ BEGIN
     assert O_isJmp = '0'          report "(1) Invalid isJmp flag" severity error;
     assert O_jmpCondition = "111" report "(1) Invalid jump condition" severity error;
     assert O_isSWP = '0'          report "(1) Invalid SWP flag" severity error;
+    assert O_isLastInstr = '0'    report "(1) Invalid isLastInstruction flag" severity error;
     report "Finished decoding 'ADD ACC, NIL, 5'";
     
     I_instr <= X"84900001";
@@ -85,7 +89,7 @@ BEGIN
     assert O_srcA = "001"         report "(2) Invalid srcA value" severity error;
     assert O_srcB = "00"          report "(2) Invalid srcB value" severity error;
     assert O_imm = X"0001"        report "(2) Invalid immediate operand value" severity error;
-    assert O_aluOp = "01"         report "(2) Invalid ALU operation" severity error;
+    assert O_aluOp = "001"        report "(2) Invalid ALU operation" severity error;
     assert O_srcA_isPort = '0'    report "(2) Invalid srcA_isPort flag" severity error;
     assert O_dst_isPort = '0'     report "(2) Invalid dst_isPort flag" severity error;
     assert O_enableWrite = '1'    report "(2) Invalid enableWrite flag" severity error;
@@ -93,6 +97,7 @@ BEGIN
     assert O_isJmp = '0'          report "(2) Invalid isJmp flag" severity error;
     assert O_jmpCondition = "111" report "(2) Invalid jump condition" severity error;
     assert O_isSWP = '0'          report "(2) Invalid SWP flag" severity error;
+    assert O_isLastInstr = '0'    report "(2) Invalid isLastInstruction flag" severity error;
     report "Finished decoding 'SUB ACC, ACC, 1'";
 
     I_instr <= X"CC100005";
@@ -101,7 +106,7 @@ BEGIN
     assert O_srcA = "001"         report "(3) Invalid srcA value" severity error;
     assert O_srcB = "00"          report "(3) Invalid srcB value" severity error;
     assert O_imm = X"0005"        report "(3) Invalid immediate operand value" severity error;
-    assert O_aluOp = "11"         report "(3) Invalid ALU operation" severity error;
+    assert O_aluOp = "011"        report "(3) Invalid ALU operation" severity error;
     assert O_srcA_isPort = '0'    report "(3) Invalid srcA_isPort flag" severity error;
     assert O_dst_isPort = '0'     report "(3) Invalid dst_isPort flag" severity error;
     assert O_enableWrite = '0'    report "(3) Invalid enableWrite flag" severity error;
@@ -109,23 +114,59 @@ BEGIN
     assert O_isJmp = '1'          report "(3) Invalid isJmp flag" severity error;
     assert O_jmpCondition = "011" report "(3) Invalid jump condition" severity error;
     assert O_isSWP = '0'          report "(3) Invalid SWP flag" severity error;
+    assert O_isLastInstr = '0'    report "(3) Invalid isLastInstruction flag" severity error;
     report "Finished decoding 'JMP EQUAL, 5'";
 
     I_instr <= X"10000000";
     wait for 10 ns;
-    assert O_dst = "000"          report "(3) Invalid dst value" severity error;
-    assert O_srcA = "000"         report "(3) Invalid srcA value" severity error;
-    assert O_srcB = "00"          report "(3) Invalid srcB value" severity error;
-    assert O_imm = X"0000"        report "(3) Invalid immediate operand value" severity error;
-    assert O_aluOp = "00"         report "(3) Invalid ALU operation" severity error;
-    assert O_srcA_isPort = '0'    report "(3) Invalid srcA_isPort flag" severity error;
-    assert O_dst_isPort = '0'     report "(3) Invalid dst_isPort flag" severity error;
-    assert O_enableWrite = '1'    report "(3) Invalid enableWrite flag" severity error;
-    assert O_containsIMM = '0'    report "(3) Invalid containsIMM flag" severity error;
-    assert O_isJmp = '0'          report "(3) Invalid isJmp flag" severity error;
-    assert O_jmpCondition = "111" report "(3) Invalid jump condition" severity error;
-    assert O_isSWP = '1'          report "(3) Invalid SWP flag" severity error;
+    assert O_dst = "000"          report "(4) Invalid dst value" severity error;
+    assert O_srcA = "000"         report "(4) Invalid srcA value" severity error;
+    assert O_srcB = "00"          report "(4) Invalid srcB value" severity error;
+    assert O_imm = X"0000"        report "(4) Invalid immediate operand value" severity error;
+    assert O_aluOp = "000"        report "(4) Invalid ALU operation" severity error;
+    assert O_srcA_isPort = '0'    report "(4) Invalid srcA_isPort flag" severity error;
+    assert O_dst_isPort = '0'     report "(4) Invalid dst_isPort flag" severity error;
+    assert O_enableWrite = '1'    report "(4) Invalid enableWrite flag" severity error;
+    assert O_containsIMM = '0'    report "(4) Invalid containsIMM flag" severity error;
+    assert O_isJmp = '0'          report "(4) Invalid isJmp flag" severity error;
+    assert O_jmpCondition = "111" report "(4) Invalid jump condition" severity error;
+    assert O_isSWP = '1'          report "(4) Invalid SWP flag" severity error;
+    assert O_isLastInstr = '0'    report "(4) Invalid isLastInstruction flag" severity error;
     report "Finished decoding 'SWP'";
+    
+    I_instr <= X"2CA40000";
+    wait for 10 ns;
+    assert O_dst = "001"          report "(5) Invalid dst value" severity error;
+    assert O_srcA = "010"         report "(5) Invalid srcA value" severity error;
+    assert O_srcB = "01"          report "(5) Invalid srcB value" severity error;
+    assert O_imm = X"0000"        report "(5) Invalid immediate operand value" severity error;
+    assert O_aluOp = "100"        report "(5) Invalid ALU operation" severity error;
+    assert O_srcA_isPort = '1'    report "(5) Invalid srcA_isPort flag" severity error;
+    assert O_dst_isPort = '0'     report "(5) Invalid dst_isPort flag" severity error;
+    assert O_enableWrite = '1'    report "(5) Invalid enableWrite flag" severity error;
+    assert O_containsIMM = '0'    report "(5) Invalid containsIMM flag" severity error;
+    assert O_isJmp = '0'          report "(5) Invalid isJmp flag" severity error;
+    assert O_jmpCondition = "111" report "(5) Invalid jump condition" severity error;
+    assert O_isSWP = '0'          report "(5) Invalid SWP flag" severity error;
+    assert O_isLastInstr = '0'    report "(5) Invalid isLastInstruction flag" severity error;
+    report "Finished decoding 'ISUB ACC, LEFT, ACC'";
+
+    I_instr <= X"28A10000";
+    wait for 10 ns;
+    assert O_dst = "001"          report "(6) Invalid dst value" severity error;
+    assert O_srcA = "010"         report "(6) Invalid srcA value" severity error;
+    assert O_srcB = "00"          report "(6) Invalid srcB value" severity error;
+    assert O_imm = X"0000"        report "(6) Invalid immediate operand value" severity error;
+    assert O_aluOp = "000"        report "(6) Invalid ALU operation" severity error;
+    assert O_srcA_isPort = '1'    report "(6) Invalid srcA_isPort flag" severity error;
+    assert O_dst_isPort = '1'     report "(6) Invalid dst_isPort flag" severity error;
+    assert O_enableWrite = '1'    report "(6) Invalid enableWrite flag" severity error;
+    assert O_containsIMM = '0'    report "(6) Invalid containsIMM flag" severity error;
+    assert O_isJmp = '0'          report "(6) Invalid isJmp flag" severity error;
+    assert O_jmpCondition = "111" report "(6) Invalid jump condition" severity error;
+    assert O_isSWP = '0'          report "(6) Invalid SWP flag" severity error;
+    assert O_isLastInstr = '1'    report "(6) Invalid isLastInstruction flag" severity error;
+    report "Finished decoding 'ADD UP, LEFT, NIL'";
     
     wait;
   end process;

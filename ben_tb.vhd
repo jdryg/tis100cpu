@@ -117,7 +117,7 @@ BEGIN
 		wait for I_clk_period/2;
   end process;
  
-  -- UP node for sample program #2
+  -- UP node for sample program #2 and #3
   up_proc: process 
     variable a : integer range 0 to 15;
   begin
@@ -135,7 +135,7 @@ BEGIN
     end loop;
   end process;
   
-  -- DOWN node for sample program #2
+  -- DOWN node for sample program #2 and #3
   down_proc: process
   begin
     I_pdw_dataValid <= '0';
@@ -149,11 +149,25 @@ BEGIN
     wait for I_clk_period;
   end process;
 
+  -- LEFT node for sample program #3
+  left_proc: process
+  begin
+    I_plw_dataValid <= '0';
+    
+    -- Wait until the write flag is set for this port.
+    wait until O_plw_writeEnable = '1';
+    
+    I_plw_dataValid <= '1';
+    report "Input to LEFT port is " & integer'image(to_integer(unsigned(O_plw_data)));
+
+    wait for I_clk_period;
+  end process;
+
   -- Stimulus process
   stim_proc: process
   begin
     I_reset <= '1';
-    wait for I_clk_period * 2;
+    wait for I_clk_period;
     I_reset <= '0';
 
     wait;
