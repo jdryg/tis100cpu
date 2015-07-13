@@ -120,7 +120,8 @@ architecture Behavioral of ben is
 
   component node_port_writedec is
     Generic (WIDTH : integer := 8);
-    Port ( I_portID : in  STD_LOGIC_VECTOR (2 downto 0);
+    Port ( I_clk : in STD_LOGIC;
+           I_portID : in  STD_LOGIC_VECTOR (2 downto 0);
            I_writeEnable : in  STD_LOGIC;
            I_data : in  STD_LOGIC_VECTOR (WIDTH-1 downto 0);
            O_writeEnableUp : out  STD_LOGIC;
@@ -258,6 +259,7 @@ begin
   portWriterDecoder: node_port_writedec
     generic map(WIDTH => 16)
     port map(
+      I_clk => I_clk,
       I_portID => dst,
       I_writeEnable => dst_isPort AND enableWrite,
       I_data => aluResult,

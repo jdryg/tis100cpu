@@ -6,7 +6,7 @@ ENTITY ben_tb IS
 END ben_tb;
  
 ARCHITECTURE behavior OF ben_tb IS 
-  constant PROGRAM_FILENAME : string := "F:\Projects\MyStuff\TIS100\Assembler\multiply.prg";
+  constant PROGRAM_FILENAME : string := "F:\Projects\MyStuff\TIS100\Assembler\input.prg";
 
   -- Component Declaration for the Unit Under Test (UUT)
   COMPONENT ben
@@ -113,47 +113,35 @@ BEGIN
   begin
     I_clk <= '0';
 		wait for I_clk_period/2;
+
 		I_clk <= '1';
 		wait for I_clk_period/2;
   end process;
- 
-  -- UP node for sample program #2
-  up_proc: process 
-    variable a : integer range 0 to 15;
-  begin
-    a := 0;
-    while (a <= 15) loop
-      -- Write a to the DOWN port
-      I_pur_data <= std_logic_vector(to_signed(a, I_pur_data'length));
-      I_pur_dataValid <= '1';
-      
-      -- Wait until the read enable flag is set for this port.
-      wait until O_pur_readEnable = '1';
-      
-      I_pur_dataValid <= '0';
-      a := a + 1;
-    end loop;
-  end process;
   
-  -- DOWN node for sample program #2
-  down_proc: process
+  -- DOWN node 
+  down_proc: process 
   begin
-    I_pdw_dataValid <= '0';
-    
-    -- Wait until the write flag is set for this port.
-    wait until O_pdw_writeEnable = '1';
-    
-    I_pdw_dataValid <= '1';
-    report "Input to DOWN port is " & integer'image(to_integer(unsigned(O_pdw_data)));
+    wait until I_reset <= '0';
 
-    wait for I_clk_period;
+    loop
+      I_pdw_dataValid <= '1';
+      
+      -- Wait until the data from the UP port is valid
+      wait until O_pdw_writeEnable = '1';
+
+      -- Report the value read
+      report "Value read from UP node is " & integer'image(to_integer(signed(O_pdw_data)));
+      
+      I_pdw_dataValid <= '0';
+    end loop;
   end process;
 
   -- Stimulus process
   stim_proc: process
   begin
     I_reset <= '1';
-    wait for I_clk_period * 2;
+    wait for I_clk_period;
+    
     I_reset <= '0';
 
     wait;

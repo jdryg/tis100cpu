@@ -16,6 +16,8 @@
 #define PARSER_ERROR_INVALID_DST_OPERAND 6
 #define PARSER_ERROR_MISSING_JMP_TARGET  7
 
+// #define USE_DEDICATED_PORT_INSTR
+
 MIDestination TIStoMIDestination(TIS100Destination dst)
 {
 	switch (dst)
@@ -341,6 +343,7 @@ Program* Assemble(std::vector<TIS100Instruction*>& instructionList)
 			switch (instr->GetSource())
 			{
 			case TISS_IMM:
+#ifdef USE_DEDICATED_PORT_INSTR
 				if (instr->IsDestinationPort())
 				{
 					// MOV imm, port => WRP port, imm
@@ -351,6 +354,10 @@ Program* Assemble(std::vector<TIS100Instruction*>& instructionList)
 					// MOV imm, reg => ADD reg, NIL, imm
 					prog->AddMicroInstruction(new MicroInstruction(MIM_ADD, TIStoMIDestination(instr->GetDestination()), MIS_NIL, instr->GetImmediate()));
 				}
+#else
+				// MOV imm, port/reg => ADD port/reg, NIL, imm
+				prog->AddMicroInstruction(new MicroInstruction(MIM_ADD, TIStoMIDestination(instr->GetDestination()), MIS_NIL, instr->GetImmediate()));
+#endif
 				break;
 			case TISS_PORT_UP:
 			case TISS_PORT_DOWN:
@@ -358,6 +365,7 @@ Program* Assemble(std::vector<TIS100Instruction*>& instructionList)
 			case TISS_PORT_RIGHT:
 			case TISS_PORT_ANY:
 			case TISS_PORT_LAST:
+#ifdef USE_DEDICATED_PORT_INSTR
 				if (instr->IsDestinationPort())
 				{
 					// MOV portS, portD => RDP TMP, portS; WRP portD, TMP;
@@ -369,9 +377,14 @@ Program* Assemble(std::vector<TIS100Instruction*>& instructionList)
 					// MOV port, reg => RDP reg, port
 					prog->AddMicroInstruction(new MicroInstruction(MIM_RDP, TIStoMIDestination(instr->GetDestination()), TIStoMISource(instr->GetSource()), MIS_NIL));
 				}
+#else
+				// MOVE portS, portD/reg => ADD portD/reg, portS, NIL
+				prog->AddMicroInstruction(new MicroInstruction(MIM_ADD, TIStoMIDestination(instr->GetDestination()), TIStoMISource(instr->GetSource()), MIS_NIL));
+#endif
 				break;
 			case TISS_ACC:
 			case TISS_NIL:
+#ifdef USE_DEDICATED_PORT_INSTR
 				if (instr->IsDestinationPort())
 				{
 					// MOV reg, port => WRP port, reg
@@ -382,6 +395,10 @@ Program* Assemble(std::vector<TIS100Instruction*>& instructionList)
 					// MOV regS, regD => ADD regD, NIL, regS
 					prog->AddMicroInstruction(new MicroInstruction(MIM_ADD, TIStoMIDestination(instr->GetDestination()), MIS_NIL, TIStoMISource(instr->GetSource())));
 				}
+#else
+				// MOV regS, port/regD => ADD regD, port/regS, NIL
+				prog->AddMicroInstruction(new MicroInstruction(MIM_ADD, TIStoMIDestination(instr->GetDestination()), TIStoMISource(instr->GetSource()), MIS_NIL));
+#endif
 				break;
 			}
 			break;
@@ -398,9 +415,14 @@ Program* Assemble(std::vector<TIS100Instruction*>& instructionList)
 			case TISS_PORT_RIGHT:
 			case TISS_PORT_ANY:
 			case TISS_PORT_LAST:
+#ifdef USE_DEDICATED_PORT_INSTR
 				// ADD port => RDP TMP, port; ADD ACC, ACC, TMP
 				prog->AddMicroInstruction(new MicroInstruction(MIM_RDP, MID_TMP, TIStoMISource(instr->GetSource()), MIS_NIL));
 				prog->AddMicroInstruction(new MicroInstruction(MIM_ADD, MID_ACC, MIS_ACC, MIS_TMP));
+#else
+				// ADD port => ADD ACC, port, ACC
+				prog->AddMicroInstruction(new MicroInstruction(MIM_ADD, MID_ACC, TIStoMISource(instr->GetSource()), MIS_ACC));
+#endif
 				break;
 			case TISS_ACC:
 			case TISS_NIL:
@@ -422,9 +444,14 @@ Program* Assemble(std::vector<TIS100Instruction*>& instructionList)
 			case TISS_PORT_RIGHT:
 			case TISS_PORT_ANY:
 			case TISS_PORT_LAST:
+#ifdef USE_DEDICATED_PORT_INSTR
 				// SUB port => RDP TMP, port; SUB ACC, ACC, TMP
 				prog->AddMicroInstruction(new MicroInstruction(MIM_RDP, MID_TMP, TIStoMISource(instr->GetSource()), MIS_NIL));
 				prog->AddMicroInstruction(new MicroInstruction(MIM_SUB, MID_ACC, MIS_ACC, MIS_TMP));
+#else
+				// SUB port => ISUB ACC, port, ACC
+				prog->AddMicroInstruction(new MicroInstruction(MIM_ISUB, MID_ACC, TIStoMISource(instr->GetSource()), MIS_ACC));
+#endif
 				break;
 			case TISS_ACC:
 			case TISS_NIL:
@@ -440,10 +467,6 @@ Program* Assemble(std::vector<TIS100Instruction*>& instructionList)
 			prog->AddMicroInstruction(new MicroInstruction(MIM_ADD, MID_BAK, MIS_ACC, MIS_NIL));
 			break;
 		case TISM_SWP:
-//			prog->AddMicroInstruction(new MicroInstruction(MIM_ADD, MID_TMP, MIS_ACC, MIS_NIL));
-//			prog->AddMicroInstruction(new MicroInstruction(MIM_ADD, MID_ACC, MIS_BAK, MIS_NIL));
-//			prog->AddMicroInstruction(new MicroInstruction(MIM_ADD, MID_BAK, MIS_TMP, MIS_NIL));
-
 			prog->AddMicroInstruction(new MicroInstruction(MIM_SWP, MID_NIL, MIS_NIL, MIS_NIL));
 			break;
 		case TISM_JMP:
@@ -474,6 +497,7 @@ Program* Assemble(std::vector<TIS100Instruction*>& instructionList)
 			case TISS_PORT_RIGHT:
 			case TISS_PORT_ANY:
 			case TISS_PORT_LAST:
+				// TODO: Removing RDP from here requires new HW in Next PC logic entity to be able to calculate the jump target from a port value.
 				// JRO port => RDP TMP, port; JRO TMP
 				prog->AddMicroInstruction(new MicroInstruction(MIM_RDP, MID_TMP, TIStoMISource(instr->GetSource()), MIS_NIL));
 				prog->AddMicroInstruction(new MicroInstruction(MIM_JRO, MID_NIL, MIS_ACC, MIS_TMP));
@@ -520,8 +544,8 @@ int main(int argc, char** argv)
 {
 	// TODO: Parse input arguments
 
-	const char* inputFile = "double.tis";
-	const char* outputFile = "double.prg";
+	const char* inputFile = "input.tis";
+	const char* outputFile = "input.prg";
 
 	// Parse input file and retrieve all the instructions
 	std::vector<TIS100Instruction*> instructionList;

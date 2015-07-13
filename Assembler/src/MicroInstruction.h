@@ -3,12 +3,18 @@
 
 enum MIMnemonic
 {
+	// Register instructions
 	MIM_ADD,
 	MIM_SUB,
 	MIM_NEG,
 	MIM_SWP,
+	MIM_ISUB,
+
+	// Port instructions
 	MIM_RDP,
 	MIM_WRP,
+
+	// Jumps
 	MIM_JMP,
 	MIM_JEZ,
 	MIM_JNZ,

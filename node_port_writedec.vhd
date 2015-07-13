@@ -5,7 +5,8 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 entity node_port_writedec is
   Generic (WIDTH : integer := 8);
-  Port ( I_portID : in  STD_LOGIC_VECTOR (2 downto 0);
+  Port ( I_clk : in STD_LOGIC;
+         I_portID : in  STD_LOGIC_VECTOR (2 downto 0);
          I_writeEnable : in  STD_LOGIC;
          I_data : in  STD_LOGIC_VECTOR (WIDTH-1 downto 0);
          O_writeEnableUp : out  STD_LOGIC;
@@ -20,11 +21,11 @@ end node_port_writedec;
 
 architecture Behavioral of node_port_writedec is
 begin
-  O_writeEnableUp    <= I_writeEnable when I_portID = "000" else '0';
-  O_writeEnableDown  <= I_writeEnable when I_portID = "001" else '0';
-  O_writeEnableLeft  <= I_writeEnable when I_portID = "010" else '0';
-  O_writeEnableRight <= I_writeEnable when I_portID = "011" else '0';
-  
+  O_writeEnableUp    <= (I_writeEnable AND I_clk) when I_portID = "000" else '0';
+  O_writeEnableDown  <= (I_writeEnable AND I_clk) when I_portID = "001" else '0';
+  O_writeEnableLeft  <= (I_writeEnable AND I_clk) when I_portID = "010" else '0';
+  O_writeEnableRight <= (I_writeEnable AND I_clk) when I_portID = "011" else '0';
+
   O_dataUp <= I_data;
   O_dataDown <= I_data;
   O_dataLeft <= I_data;

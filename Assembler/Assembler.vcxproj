@@ -84,7 +84,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="double.tis" />
+    <None Include="input.tis" />
     <None Include="multiply.tis" />
+    <None Include="sample3.tis" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\GenericParser.h" />

@@ -42,7 +42,7 @@ bool TIS100Instruction::SetDestination(const char* str)
 bool TIS100Instruction::SetSource(const char* str)
 {
 	// Check if this is an integer constant.
-	if (GenericParser::IsNumber(str[0]))
+	if (GenericParser::IsNumber(str[0]) || (str[0] == '-' && GenericParser::IsNumber(str[1])))
 	{
 		int imm = atoi(str);
 

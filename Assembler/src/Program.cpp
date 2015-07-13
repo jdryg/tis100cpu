@@ -115,29 +115,31 @@ unsigned int* Program::GetCode() const
 		unsigned int imm = mi->GetImmediate();
 
 		unsigned int dst = 0;
+		bool dst_IsPort = false;
 		switch (mi->GetDestination())
 		{
 		case MID_NIL:        dst = 0; break;
 		case MID_ACC:        dst = 1; break;
 		case MID_BAK:        dst = 2; break;
 		case MID_TMP:        dst = 3; break;
-		case MID_PORT_UP:    dst = 0; break;
-		case MID_PORT_DOWN:  dst = 1; break;
-		case MID_PORT_LEFT:  dst = 2; break;
-		case MID_PORT_RIGHT: dst = 3; break;
+		case MID_PORT_UP:    dst = 0; dst_IsPort = true; break;
+		case MID_PORT_DOWN:  dst = 1; dst_IsPort = true; break;
+		case MID_PORT_LEFT:  dst = 2; dst_IsPort = true; break;
+		case MID_PORT_RIGHT: dst = 3; dst_IsPort = true; break;
 		}
 
 		unsigned int srcA = 0;
+		bool srcA_isPort = false;
 		switch (mi->GetSourceA())
 		{
 		case MIS_NIL:        srcA = 0; break;
 		case MIS_ACC:        srcA = 1; break;
 		case MIS_BAK:        srcA = 2; break;
 		case MIS_TMP:        srcA = 3; break;
-		case MIS_PORT_UP:    srcA = 0; break;
-		case MIS_PORT_DOWN:  srcA = 1; break;
-		case MIS_PORT_LEFT:  srcA = 2; break;
-		case MIS_PORT_RIGHT: srcA = 3; break;
+		case MIS_PORT_UP:    srcA = 0; srcA_isPort = true; break;
+		case MIS_PORT_DOWN:  srcA = 1; srcA_isPort = true; break;
+		case MIS_PORT_LEFT:  srcA = 2; srcA_isPort = true; break;
+		case MIS_PORT_RIGHT: srcA = 3; srcA_isPort = true; break;
 		}
 
 		unsigned int srcB = 0;
@@ -154,31 +156,107 @@ unsigned int* Program::GetCode() const
 		case MIS_PORT_RIGHT: srcB = 3; break;
 		}
 
+		bool invalidInstruction = false;
 		unsigned int instructionType = 0;
 		unsigned int operation = 0;
 		switch (mi->GetMnemonic())
 		{
 		case MIM_ADD:
-			instructionType = 0;
-			operation = 0;
+			if (!dst_IsPort && !srcA_isPort)
+			{
+				instructionType = 0;
+				operation = 0;
+			}
+			else
+			{
+				instructionType = 1;
+				if (!dst_IsPort && srcA_isPort)
+				{
+					operation = 0; // ADD reg, port, reg/imm <= RDP
+				}
+				else if (dst_IsPort && !srcA_isPort)
+				{
+					operation = 1; // ADD port, reg, reg/imm <= WRP
+				}
+				else
+				{
+					operation = 2; // ADD port, port, reg/imm
+				}
+			}
 			break;
 		case MIM_SUB:
-			instructionType = 0;
-			operation = 1;
+			if (!dst_IsPort && !srcA_isPort)
+			{
+				instructionType = 0;
+				operation = 1;
+			}
+			else
+			{
+				instructionType = 1;
+				if (!dst_IsPort && srcA_isPort)
+				{
+					// SUB reg, port, reg/imm
+					invalidInstruction = true;
+				}
+				else if (dst_IsPort && !srcA_isPort)
+				{
+					// SUB port, reg, reg/imm
+					invalidInstruction = true;
+				}
+				else
+				{
+					// SUB port, port, reg/imm
+					invalidInstruction = true;
+				}
+			}
 			break;
 		case MIM_NEG:
-			instructionType = 0;
-			operation = 2;
+			if (!dst_IsPort && !srcA_isPort)
+			{
+				instructionType = 0;
+				operation = 2;
+			}
+			else
+			{
+				invalidInstruction = true;
+			}
+			break;
+		case MIM_ISUB:
+			if (!dst_IsPort && !srcA_isPort)
+			{
+				instructionType = 0;
+				operation = 4;
+			}
+			else
+			{
+				instructionType = 1;
+				if (!dst_IsPort && srcA_isPort)
+				{
+					operation = 3; // ISUB reg, port, reg/imm
+				}
+				else if (dst_IsPort && !srcA_isPort)
+				{
+					// ISUB port, reg, reg/imm
+					invalidInstruction = true;
+				}
+				else
+				{
+					// ISUB port, port, reg/imm
+					invalidInstruction = true;
+				}
+			}
 			break;
 		case MIM_SWP:
 			instructionType = 0;
 			operation = 4; // 100
 			break;
 		case MIM_RDP:
+			// TODO: Remove this
 			instructionType = 1;
 			operation = 0;
 			break;
 		case MIM_WRP:
+			// TODO: Remove this
 			instructionType = 1;
 			operation = 1;
 			break;
@@ -203,6 +281,12 @@ unsigned int* Program::GetCode() const
 			instructionType = 2;
 			operation = 2;
 			break;
+		}
+
+		if (invalidInstruction)
+		{
+			delete[] imem;
+			return 0;
 		}
 
 		unsigned int opcode = 0;

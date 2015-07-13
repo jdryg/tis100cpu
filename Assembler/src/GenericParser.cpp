@@ -40,7 +40,7 @@ bool GenericParser::GetNextToken(char* string, unsigned int size)
 	SkipComments();
 
 	unsigned int NumCharacters = 0;
-	while((IsNumber(m_String[m_CurPos]) || IsAlphaUnderscore(m_String[m_CurPos])) && NumCharacters < size)
+	while((IsNumber(m_String[m_CurPos]) || IsAlphaUnderscore(m_String[m_CurPos]) || m_String[m_CurPos] == '-') && NumCharacters < size)
 		string[NumCharacters++] = m_String[m_CurPos++];
 
 	//////////////////////////////////////////////////////////////////////////
