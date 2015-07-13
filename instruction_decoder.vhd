@@ -7,7 +7,7 @@ entity instruction_decoder is
          O_srcA : out  STD_LOGIC_VECTOR (2 downto 0);
          O_srcB : out  STD_LOGIC_VECTOR (1 downto 0);
          O_imm : out  STD_LOGIC_VECTOR (15 downto 0);
-         O_aluOp: out STD_LOGIC_VECTOR (1 downto 0);
+         O_aluOp: out STD_LOGIC_VECTOR (2 downto 0);
          O_srcA_isPort : out  STD_LOGIC;
          O_dst_isPort : out  STD_LOGIC;
          O_enableWrite : out  STD_LOGIC;
@@ -29,7 +29,7 @@ begin
     O_isLastInstr <= I_instr(16);
 
     -- Default values for the rest of the signals
-    O_aluOp <= "00";
+    O_aluOp <= "000";
     O_srcA_isPort <= '0';
     O_dst_isPort <= '0';
     O_enableWrite <= '0';
@@ -42,10 +42,10 @@ begin
       -- Arithmetic instructions
       O_enableWrite <= '1';
       case I_instr(28 downto 26) is 
-        when "000" => O_aluOp <= "00";
-        when "001" => O_aluOp <= "01";
-        when "010" => O_aluOp <= "10";
-        when others => O_aluOp <= "00";
+        when "000" => O_aluOp <= "000";
+        when "001" => O_aluOp <= "001";
+        when "010" => O_aluOp <= "010";
+        when others => O_aluOp <= "000";
       end case;
       
       -- Special case of SWP instruction
@@ -68,7 +68,7 @@ begin
       -- Jxx instruction
       O_isJmp <= '1';
       O_jmpCondition <= I_instr(28 downto 26);
-      O_aluOp <= "11"; -- Set Less Than
+      O_aluOp <= "011"; -- Set Less Than
     end if;
   end process;
 end Behavioral;

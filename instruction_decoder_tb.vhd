@@ -14,7 +14,7 @@ ARCHITECTURE behavior OF instruction_decoder_tb IS
       O_srcA         : OUT  std_logic_vector(2 downto 0);
       O_srcB         : OUT  std_logic_vector(1 downto 0);
       O_imm          : OUT  std_logic_vector(15 downto 0);
-      O_aluOp        : OUT  std_logic_vector(1 downto 0);
+      O_aluOp        : OUT  std_logic_vector(2 downto 0);
       O_srcA_isPort  : OUT  std_logic;
       O_dst_isPort   : OUT  std_logic;
       O_enableWrite  : OUT  std_logic;
@@ -33,7 +33,7 @@ ARCHITECTURE behavior OF instruction_decoder_tb IS
   signal O_srcA : std_logic_vector(2 downto 0);
   signal O_srcB : std_logic_vector(1 downto 0);
   signal O_imm : std_logic_vector(15 downto 0);
-  signal O_aluOp : std_logic_vector(1 downto 0);
+  signal O_aluOp : std_logic_vector(2 downto 0);
   signal O_srcA_isPort : std_logic;
   signal O_dst_isPort : std_logic;
   signal O_enableWrite : std_logic;
@@ -69,7 +69,7 @@ BEGIN
     assert O_srcA = "000"         report "(1) Invalid srcA value" severity error;
     assert O_srcB = "00"          report "(1) Invalid srcB value" severity error;
     assert O_imm = X"0005"        report "(1) Invalid immediate operand value" severity error;
-    assert O_aluOp = "00"         report "(1) Invalid ALU operation" severity error;
+    assert O_aluOp = "000"        report "(1) Invalid ALU operation" severity error;
     assert O_srcA_isPort = '0'    report "(1) Invalid srcA_isPort flag" severity error;
     assert O_dst_isPort = '0'     report "(1) Invalid dst_isPort flag" severity error;
     assert O_enableWrite = '1'    report "(1) Invalid enableWrite flag" severity error;
@@ -85,7 +85,7 @@ BEGIN
     assert O_srcA = "001"         report "(2) Invalid srcA value" severity error;
     assert O_srcB = "00"          report "(2) Invalid srcB value" severity error;
     assert O_imm = X"0001"        report "(2) Invalid immediate operand value" severity error;
-    assert O_aluOp = "01"         report "(2) Invalid ALU operation" severity error;
+    assert O_aluOp = "001"        report "(2) Invalid ALU operation" severity error;
     assert O_srcA_isPort = '0'    report "(2) Invalid srcA_isPort flag" severity error;
     assert O_dst_isPort = '0'     report "(2) Invalid dst_isPort flag" severity error;
     assert O_enableWrite = '1'    report "(2) Invalid enableWrite flag" severity error;
@@ -101,7 +101,7 @@ BEGIN
     assert O_srcA = "001"         report "(3) Invalid srcA value" severity error;
     assert O_srcB = "00"          report "(3) Invalid srcB value" severity error;
     assert O_imm = X"0005"        report "(3) Invalid immediate operand value" severity error;
-    assert O_aluOp = "11"         report "(3) Invalid ALU operation" severity error;
+    assert O_aluOp = "011"        report "(3) Invalid ALU operation" severity error;
     assert O_srcA_isPort = '0'    report "(3) Invalid srcA_isPort flag" severity error;
     assert O_dst_isPort = '0'     report "(3) Invalid dst_isPort flag" severity error;
     assert O_enableWrite = '0'    report "(3) Invalid enableWrite flag" severity error;
@@ -117,7 +117,7 @@ BEGIN
     assert O_srcA = "000"         report "(3) Invalid srcA value" severity error;
     assert O_srcB = "00"          report "(3) Invalid srcB value" severity error;
     assert O_imm = X"0000"        report "(3) Invalid immediate operand value" severity error;
-    assert O_aluOp = "00"         report "(3) Invalid ALU operation" severity error;
+    assert O_aluOp = "000"        report "(3) Invalid ALU operation" severity error;
     assert O_srcA_isPort = '0'    report "(3) Invalid srcA_isPort flag" severity error;
     assert O_dst_isPort = '0'     report "(3) Invalid dst_isPort flag" severity error;
     assert O_enableWrite = '1'    report "(3) Invalid enableWrite flag" severity error;

@@ -1,10 +1,9 @@
 -- TIS-100 16-bit Basic Execution Node (BEN)
--- Added these lines on rev. 42 in order to remove the commit message saying that 
--- there is a bug in the implementation, since the bug has been fixed in the same rev.
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
 entity ben is
+  Generic (PROGRAM_FILENAME : string := "unknown.prg");
   Port ( I_clk, I_reset : in  STD_LOGIC;
          I_puw_dataValid : in  STD_LOGIC;
          I_pdw_dataValid : in  STD_LOGIC;
@@ -39,7 +38,7 @@ architecture Behavioral of ben is
   signal dst, srcA : STD_LOGIC_VECTOR (2 downto 0);
   signal srcB : STD_LOGIC_VECTOR (1 downto 0);
   signal imm : STD_LOGIC_VECTOR (15 downto 0);
-  signal aluOp : STD_LOGIC_VECTOR (1 downto 0);
+  signal aluOp : STD_LOGIC_VECTOR (2 downto 0);
   signal srcA_isPort, dst_isPort, enableWrite, containsIMM, isJmp : STD_LOGIC;
   signal jmpCondition : STD_LOGIC_VECTOR (2 downto 0);
   signal aluResult, regA_data, regB_data : STD_LOGIC_VECTOR (15 downto 0);
@@ -60,6 +59,7 @@ architecture Behavioral of ben is
   end component;
 
   component instruction_memory is
+    generic (FILENAME : string := PROGRAM_FILENAME);
     port ( I_addr  : in  STD_LOGIC_VECTOR (5 downto 0);
            O_instr : out  STD_LOGIC_VECTOR (31 downto 0));
   end component;
@@ -70,7 +70,7 @@ architecture Behavioral of ben is
            O_srcA : out  STD_LOGIC_VECTOR (2 downto 0);
            O_srcB : out  STD_LOGIC_VECTOR (1 downto 0);
            O_imm : out  STD_LOGIC_VECTOR (15 downto 0);
-           O_aluOp: out STD_LOGIC_VECTOR (1 downto 0);
+           O_aluOp: out STD_LOGIC_VECTOR (2 downto 0);
            O_srcA_isPort : out  STD_LOGIC;
            O_dst_isPort : out  STD_LOGIC;
            O_enableWrite : out  STD_LOGIC;
@@ -145,7 +145,7 @@ architecture Behavioral of ben is
   component alu is
     generic (WIDTH: integer := 8);
     port ( I_a, I_b : in  STD_LOGIC_VECTOR (WIDTH-1 downto 0);
-           I_op     : in  STD_LOGIC_VECTOR (1 downto 0);
+           I_op     : in  STD_LOGIC_VECTOR (2 downto 0);
            O_isZero : out STD_LOGIC;
            O_y      : buffer  STD_LOGIC_VECTOR (WIDTH-1 downto 0));
   end component;
@@ -186,6 +186,7 @@ begin
   
   -- Instruction memory
   imem: instruction_memory 
+    generic map(FILENAME => PROGRAM_FILENAME)
     port map(
       I_addr => PC, 
       O_instr => opcode
