@@ -1,105 +1,62 @@
 library IEEE;
+use STD.TEXTIO.all;
 use IEEE.STD_LOGIC_1164.ALL;
-use IEEE.STD_LOGIC_ARITH.all;
-use IEEE.STD_LOGIC_UNSIGNED.all;
+use IEEE.NUMERIC_STD.ALL;
 
 entity instruction_memory is
+  generic (filename : string := "unknown.prg");
   port ( I_addr  : in  STD_LOGIC_VECTOR (5 downto 0);
          O_instr : out  STD_LOGIC_VECTOR (31 downto 0));
 end instruction_memory;
 
 architecture Behavioral of instruction_memory is
-  type IMEM is array (0 to 15) of STD_LOGIC_VECTOR (31 downto 0);
-  
-  -- Read only memory
-  -- Sample program #1: ACC = 5 * 3
-  -- Version 1 without special SWP instruction.
---  constant ROM: IMEM := (
---    -- MOV 5, ACC   # iteration_counter = 5;
---    X"80800005", -- ADD ACC, NIL, 5
---    -- SAV          # BAK = iteration_counter;
---    X"01100000", -- ADD BAK, ACC, NIL
---    -- MOV 0, ACC   # res = 0;
---    X"80800000", -- ADD ACC, NIL, 0
---    -- LOOP: ADD 3  # res += 3;
---    X"80900003", -- ADD ACC, ACC, 3
---    -- SWP          # ACC = iteration_counter; BAK = res;
---    X"01900000", -- ADD TMP, ACC, NIL
---    X"00A00000", -- ADD ACC, BAK, NIL
---    X"01300000", -- ADD BAK, TMP, NIL
---    -- SUB 1        # iteration_counter -= 1;
---    X"84900001", -- SUB ACC, ACC, 1
---    -- JEZ END      # if (iteration_counter == 0) goto END;
---    X"CC100005", -- JMP EQUAL, 5
---    -- SWP          # ACC = res; BAK = iteration_counter;
---    X"01900000", -- ADD TMP, ACC, NIL
---    X"00A00000", -- ADD ACC, BAK, NIL
---    X"01300000", -- ADD BAK, TMP, NIL
---    -- JMP LOOP     # goto LOOP;
---    X"C010FFF7", -- JMP ALWAYS, -9
---    -- END: SWP     # ACC = res (= 5 * 3)
---    X"01900000", -- ADD TMP, ACC, NIL
---    X"00A00000", -- ADD ACC, BAK, NIL
---    X"01300000"  -- ADD BAK, TMP, NIL
---  );
-
-  -- Sample program #1: ACC = 5 * 3
-  -- Version 2 with dedicated SWP instruction + last instruction flag
---  constant ROM: IMEM := (
---    -- MOV 5, ACC   # iteration_counter = 5;
---    X"80800005", -- ADD ACC, NIL, 5
---    -- SAV          # BAK = iteration_counter;
---    X"01100000", -- ADD BAK, ACC, NIL
---    -- MOV 0, ACC   # res = 0;
---    X"80800000", -- ADD ACC, NIL, 0
---    -- LOOP: ADD 3  # res += 3;
---    X"80900003", -- ADD ACC, ACC, 3
---    -- SWP          # ACC = iteration_counter; BAK = res;
---    X"10000000", -- SWP
---    -- SUB 1        # iteration_counter -= 1;
---    X"84900001", -- SUB ACC, ACC, 1
---    -- JEZ END      # if (iteration_counter == 0) goto END;
---    X"CC100003", -- JMP EQUAL, 3
---    -- SWP          # ACC = res; BAK = iteration_counter;
---    X"10000000", -- SWP
---    -- JMP LOOP     # goto LOOP;
---    X"C010FFFB", -- JMP ALWAYS, -5
---    -- END: SWP     # ACC = res (= 5 * 3)
---    X"10010000", -- SWP + last instruction
---    X"00000000", -- NOP
---    X"00000000", -- NOP
---    X"00000000", -- NOP
---    X"00000000", -- NOP
---    X"00000000", -- NOP
---    X"00000000"  -- NOP
---  );
-
-  -- Sample program #2: Read UP port, double the value and write the result to the DOWN port
-  -- Version 1 with dedicated port instructions (RDP, WRP)
-  constant ROM: IMEM := (
-    -- MOV UP, ACC   # ACC = a = readPort(UP);
-    X"20800000", 
-    -- ADD ACC       # ACC += ACC;
-    X"00940000",
-    -- MOV ACC, DOWN # writePort(DOWN, ACC);
-    X"24910000",
-    X"00000000", -- NOP
-    X"00000000", -- NOP
-    X"00000000", -- NOP
-    X"00000000", -- NOP
-    X"00000000", -- NOP
-    X"00000000", -- NOP
-    X"00000000", -- NOP
-    X"00000000", -- NOP
-    X"00000000", -- NOP
-    X"00000000", -- NOP
-    X"00000000", -- NOP
-    X"00000000", -- NOP
-    X"00000000"  -- NOP
-  );
-
 begin
-  process(I_addr) begin
-    O_instr <= ROM(conv_integer(I_addr));
+  process is 
+    file progFile: TEXT;
+    variable l: line;
+    variable ch: character;
+    variable i, index, result: integer;
+    
+    type memtype is array (0 to 15) of STD_LOGIC_VECTOR (31 downto 0);
+    variable ROM: memtype;
+  begin
+    -- Set all instructions to NOP
+    for i in 0 to 15 loop
+      ROM(i) := X"0000";
+    end loop;
+
+    index := 0;
+
+    FILE_OPEN(progFile, filename, READ_MODE);
+    while (not endfile(progFile)) loop
+      -- Read a single line (1 instruction)
+      readline(progFile, l);
+
+      -- Build the instruction code from the individual characters.
+      result := 0;
+
+      -- Translate each character to its value
+      for i in 1 to 8 loop
+        read(L, ch);
+
+        if '0' <= ch and ch <= '9' then 
+          result := character'pos(ch) - character'pos('0');
+        elsif 'A' <= ch and ch <= 'F' then
+          result := character'pos(ch) - character'pos('A') + 10;
+        else 
+          report "Format error on line " & integer'image(index) severity error;
+        end if;
+
+        ROM(index)(35 - i*4 downto 32-i*4) := std_logic_vector(to_unsigned(result, 4));
+      end loop;
+
+      index := index + 1;
+    end loop;
+
+    -- Read memory
+    loop
+      O_instr <= ROM(to_integer(unsigned(I_addr)));
+      wait on I_addr;
+    end loop;
   end process;
 end Behavioral;

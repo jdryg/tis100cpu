@@ -5,8 +5,11 @@ ENTITY instruction_memory_tb IS
 END instruction_memory_tb;
 
 ARCHITECTURE behavior OF instruction_memory_tb IS 
+  constant PROGRAM_FILENAME : string := "F:\Projects\MyStuff\TIS100\Assembler\multiply.prg";
+
   -- Component Declaration for the Unit Under Test (UUT)
   COMPONENT instruction_memory
+    GENERIC(filename : string := PROGRAM_FILENAME);
     PORT(
       I_addr : IN  std_logic_vector(5 downto 0);
       O_instr : OUT  std_logic_vector(31 downto 0)
@@ -21,7 +24,9 @@ ARCHITECTURE behavior OF instruction_memory_tb IS
 
 BEGIN
 	-- Instantiate the Unit Under Test (UUT)
-  uut: instruction_memory PORT MAP (
+  uut: instruction_memory 
+  GENERIC MAP (filename => PROGRAM_FILENAME)
+  PORT MAP (
     I_addr => I_addr,
     O_instr => O_instr
   );
@@ -40,7 +45,7 @@ BEGIN
 
     I_addr <= "000100";
     wait for 10ns;
-    assert O_instr = X"01900000" report "Invalid instruction @ addr 4" severity error;
+    assert O_instr = X"10000000" report "Invalid instruction @ addr 4" severity error;
 
     wait;
   end process;
