@@ -11,7 +11,7 @@ ARCHITECTURE behavior OF alu_tb IS
   COMPONENT alu
     GENERIC (WIDTH : integer := ALU_SIZE);
     PORT(I_a, I_b : IN  std_logic_vector(WIDTH-1 downto 0);
-       I_op       : IN  std_logic_vector(1 downto 0);
+       I_op       : IN  std_logic_vector(2 downto 0);
        O_isZero   : OUT std_logic;
        O_y        : BUFFER  std_logic_vector(WIDTH-1 downto 0));
   END COMPONENT;
@@ -19,7 +19,7 @@ ARCHITECTURE behavior OF alu_tb IS
   --Inputs
   signal I_a : std_logic_vector(ALU_SIZE-1 downto 0) := (others => '0');
   signal I_b : std_logic_vector(ALU_SIZE-1 downto 0) := (others => '0');
-  signal I_op : std_logic_vector(1 downto 0) := (others => '0');
+  signal I_op : std_logic_vector(2 downto 0) := (others => '0');
 
  	--Outputs
   signal O_isZero : std_logic;
@@ -40,7 +40,7 @@ BEGIN
   stim_proc: process
   begin		
     -- Addition
-    I_op <= "00";
+    I_op <= "000";
     
     -- Test addition of positive numbers (op = 00)
     I_a <= X"0001";
@@ -67,7 +67,7 @@ BEGIN
     report "Addition of negative numbers completed";
 
     -- Subtraction
-    I_op <= "01";
+    I_op <= "001";
     
     -- Test subtraction of positive numbers
     I_a <= X"0001";
@@ -94,7 +94,7 @@ BEGIN
     report "Subtraction of negative numbers completed";
 
     -- Negation
-    I_op <= "10";
+    I_op <= "010";
     I_b <= X"0001";
     
     -- Test negation of positive number
@@ -111,7 +111,7 @@ BEGIN
     report "Negation of negative number completed";
     
     -- Set Less Than
-    I_op <= "11";
+    I_op <= "011";
     I_b <= X"0000";
     
     -- -1 < 0
@@ -130,6 +130,33 @@ BEGIN
     assert O_y = X"0000" report "0 < 0 failed" severity error;
     assert O_isZero = '1' report "Invalid zero flag" severity error;
     report "SLT tests completed";
+
+    -- Inverse Subtraction
+    I_op <= "100";
+    
+    -- Test inverse subtraction of positive numbers
+    I_a <= X"0001";
+    I_b <= X"0002";
+    wait for 10 ns;
+    assert O_y = X"0001" report "Inverse subtraction of positive numbers failed" severity error;
+    assert O_isZero = '0' report "Invalid zero flag" severity error;
+    report "Inverse subtraction of positive numbers completed";
+
+    -- Test inverse subtraction of 1 positive and 1 negative number (op = 00)
+    I_a <= X"FFF7";
+    I_b <= X"0009";
+    wait for 10 ns;
+    assert O_y = X"0012" report "Inverse subtraction of 1 positive and 1 negative number failed" severity error;
+    assert O_isZero = '0' report "Invalid zero flag" severity error;
+    report "Inverse subtraction of mixed numbers completed";
+
+    -- Test inverse subtraction of 2 negative numbers 
+    I_a <= X"FFFF";
+    I_b <= X"FFFE";
+    wait for 10 ns;
+    assert O_y = X"FFFF" report "Inverse subtraction of negative numbers failed" severity error;
+    assert O_isZero = '0' report "Invalid zero flag" severity error;
+    report "Inverse subtraction of negative numbers completed";
 
     wait;
   end process;
