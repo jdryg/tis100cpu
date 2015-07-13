@@ -95,7 +95,8 @@ architecture Behavioral of ben is
   end component;
   
   component node_port_readdec is
-    port ( I_portID : in  STD_LOGIC_VECTOR (2 downto 0);
+    port ( I_clk : in STD_LOGIC;
+           I_portID : in  STD_LOGIC_VECTOR (2 downto 0);
            I_readEnable : in  STD_LOGIC;
            O_readEnableUp : out  STD_LOGIC;
            O_readEnableDown : out  STD_LOGIC;
@@ -230,6 +231,7 @@ begin
   -- Port Reader decoder
   portReaderDecoder: node_port_readdec 
     port map(
+      I_clk => I_clk,
       I_portID => srcA,
       I_readEnable => srcA_isPort AND enableWrite,
       O_readEnableUp => O_pur_readEnable,

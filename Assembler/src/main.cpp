@@ -544,8 +544,8 @@ int main(int argc, char** argv)
 {
 	// TODO: Parse input arguments
 
-	const char* inputFile = "input.tis";
-	const char* outputFile = "input.prg";
+	const char* inputFile = "output.tis";
+	const char* outputFile = "output.prg";
 
 	// Parse input file and retrieve all the instructions
 	std::vector<TIS100Instruction*> instructionList;

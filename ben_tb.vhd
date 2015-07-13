@@ -6,7 +6,8 @@ ENTITY ben_tb IS
 END ben_tb;
  
 ARCHITECTURE behavior OF ben_tb IS 
-  constant PROGRAM_FILENAME : string := "F:\Projects\MyStuff\TIS100\Assembler\input.prg";
+--  constant PROGRAM_FILENAME : string := "F:\Projects\MyStuff\TIS100\Assembler\input.prg";
+  constant PROGRAM_FILENAME : string := "F:\Projects\MyStuff\TIS100\Assembler\output.prg";
 
   -- Component Declaration for the Unit Under Test (UUT)
   COMPONENT ben
@@ -118,21 +119,41 @@ BEGIN
 		wait for I_clk_period/2;
   end process;
   
-  -- DOWN node 
-  down_proc: process 
+  -- DOWN node for input.prg
+--  down_proc: process 
+--  begin
+--    wait until I_reset <= '0';
+--
+--    loop
+--      I_pdw_dataValid <= '1';
+--      
+--      -- Wait until the data from the UP port is valid
+--      wait until O_pdw_writeEnable = '1';
+--
+--      -- Report the value read
+--      report "Value read from UP node is " & integer'image(to_integer(signed(O_pdw_data)));
+--      
+--      I_pdw_dataValid <= '0';
+--    end loop;
+--  end process;
+
+  -- UP node for output.prg
+  up_proc: process
+    variable a : integer := 1;
   begin
-    wait until I_reset <= '0';
-
+    wait until I_reset = '0';
+    
     loop
-      I_pdw_dataValid <= '1';
-      
-      -- Wait until the data from the UP port is valid
-      wait until O_pdw_writeEnable = '1';
+      a := a + 1;
 
-      -- Report the value read
-      report "Value read from UP node is " & integer'image(to_integer(signed(O_pdw_data)));
+      I_pur_data <= std_logic_vector(to_signed(a, 16));
+      I_pur_dataValid <= '1';
+
+      wait until O_pur_readEnable = '1';
       
-      I_pdw_dataValid <= '0';
+      report "Value written to DOWN node is " & integer'image(a);
+
+      I_pur_dataValid <= '0';
     end loop;
   end process;
 
