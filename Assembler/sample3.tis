@@ -1,5 +1,4 @@
 MOV UP, ACC   # ACC = a = readPort(UP);
 ADD UP        # ACC += b = readPort(UP);
 SUB UP        # ACC -= c = readPort(UP);
-MOV ACC, LEFT # writePort(LEFT, ACC);
-MOV UP, DOWN  # writePort(DOWN, d = readPort(UP));
+MOV ACC, DOWN # writePort(DOWN, ACC);

@@ -21,10 +21,10 @@ end node_port_writedec;
 
 architecture Behavioral of node_port_writedec is
 begin
-  O_writeEnableUp    <= (I_writeEnable AND I_clk) when I_portID = "000" else '0';
-  O_writeEnableDown  <= (I_writeEnable AND I_clk) when I_portID = "001" else '0';
-  O_writeEnableLeft  <= (I_writeEnable AND I_clk) when I_portID = "010" else '0';
-  O_writeEnableRight <= (I_writeEnable AND I_clk) when I_portID = "011" else '0';
+  O_writeEnableUp    <= I_writeEnable when I_portID = "000" else '0';
+  O_writeEnableDown  <= I_writeEnable when I_portID = "001" else '0';
+  O_writeEnableLeft  <= I_writeEnable when I_portID = "010" else '0';
+  O_writeEnableRight <= I_writeEnable when I_portID = "011" else '0';
 
   O_dataUp <= I_data;
   O_dataDown <= I_data;

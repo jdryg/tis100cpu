@@ -62,32 +62,23 @@ BEGIN
   -- Stimulus process
   stim_proc: process
   begin		
---    wait for I_clk_period/2;
-
     -- Reset FSM
     I_reset <= '1';
     wait for I_clk_period;
     I_reset <= '0';
+    wait for I_clk_period/2;
 
-    -- Write and read at the same time.
     I_writeEnable <= '1';
     I_readEnable <= '1';
-    I_dataIn <= X"dead";
-
-    -- Write should happen at this clock cycle.
+    I_dataIn <= X"0001";
+    
     wait for I_clk_period;
-
-    -- Disable writes and wait an additional cycle for the read.
+    
     I_writeEnable <= '0';
-    I_dataIn <= X"0000";
-
+    
     wait for I_clk_period;
-
-    -- 
-    if(O_dataOutValid = '1') then
-      I_readEnable <= '0';
-      assert O_dataOut = X"dead" report "Wrong output data." severity error;
-    end if;
+    
+    I_writeEnable <= '1';
 
     wait;
   end process;

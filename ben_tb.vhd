@@ -7,7 +7,8 @@ END ben_tb;
  
 ARCHITECTURE behavior OF ben_tb IS 
 --  constant PROGRAM_FILENAME : string := "F:\Projects\MyStuff\TIS100\Assembler\input.prg";
-  constant PROGRAM_FILENAME : string := "F:\Projects\MyStuff\TIS100\Assembler\output.prg";
+--  constant PROGRAM_FILENAME : string := "F:\Projects\MyStuff\TIS100\Assembler\output.prg";
+  constant PROGRAM_FILENAME : string := "F:\Projects\MyStuff\TIS100\Assembler\sample3.prg";
 
   -- Component Declaration for the Unit Under Test (UUT)
   COMPONENT ben
@@ -119,29 +120,31 @@ BEGIN
 		wait for I_clk_period/2;
   end process;
   
-  -- DOWN node for input.prg
---  down_proc: process 
---  begin
---    wait until I_reset <= '0';
---
---    loop
---      I_pdw_dataValid <= '1';
---      
---      -- Wait until the data from the UP port is valid
---      wait until O_pdw_writeEnable = '1';
---
---      -- Report the value read
---      report "Value read from UP node is " & integer'image(to_integer(signed(O_pdw_data)));
---      
---      I_pdw_dataValid <= '0';
---    end loop;
---  end process;
+  -- DOWN node for input.prg and sample3.prg
+  down_proc: process 
+  begin
+    wait until I_reset <= '0';
 
-  -- UP node for output.prg
+    loop
+      I_pdw_dataValid <= '1';
+      
+      -- Wait until the data from the UP port is valid
+      wait until O_pdw_writeEnable = '1';
+
+      -- Report the value read
+      report "Value written to the DOWN port is " & integer'image(to_integer(signed(O_pdw_data)));
+      wait for I_clk_period;
+      
+      I_pdw_dataValid <= '0';
+    end loop;
+  end process;
+
+  -- UP node for output.prg and sample3.prg
   up_proc: process
-    variable a : integer := 1;
+    variable a : integer := 0;
   begin
     wait until I_reset = '0';
+    wait for I_clk_period / 2;
     
     loop
       a := a + 1;
@@ -151,8 +154,9 @@ BEGIN
 
       wait until O_pur_readEnable = '1';
       
-      report "Value written to DOWN node is " & integer'image(a);
-
+      report "Value read from UP port is " & integer'image(a);
+      wait for I_clk_period;
+      
       I_pur_dataValid <= '0';
     end loop;
   end process;

@@ -21,6 +21,8 @@ begin
   state_proc: process (I_clk, I_reset) begin
     if (I_reset = '1') then
       state <= S_EMPTY;
+      O_dataOut <= (others => '0');
+      O_dataOutValid <= '0';
     elsif (rising_edge(I_clk)) then 
       -- Always reset the O_dataOutValid output. The reading node had its chance for a whole clock cycle. 
       -- Hope it's enough :)
@@ -28,6 +30,7 @@ begin
 
       case state is
         when S_EMPTY => 
+          report "PORT is EMPTY " & std_logic'image(I_writeEnable) & " " & std_logic'image(I_readEnable);
           -- Port is EMPTY. The worst case scenario at this point is one node to write
           -- and the other to read, at the same time. Favor writes over reads (1 cycle less to complete the transaction). 
           if (I_writeEnable = '1') then

@@ -58,11 +58,19 @@ begin
       -- Port instruction
       O_enableWrite <= '1';
       if (I_instr(28 downto 26) = "000") then
-        -- RDP
+        -- ADD reg, port, reg/imm
         O_srcA_isPort <= '1';
       elsif (I_instr(28 downto 26) = "001") then
-        -- WRP
+        -- ADD port, reg, reg/imm
         O_dst_isPort <= '1';
+      elsif (I_instr(28 downto 26) = "010") then
+        -- ADD port, port, reg/imm
+        O_srcA_isPort <= '1';
+        O_dst_isPort <= '1';
+      elsif (I_instr(28 downto 26) = "011") then
+        -- ISUB reg, port, reg/imm
+        O_srcA_isPort <= '1';
+        O_aluOp <= "100";
       end if;
     elsif (I_instr (30 downto 29) = "10") then
       -- Jxx instruction
